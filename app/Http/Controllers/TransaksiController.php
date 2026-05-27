@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaksi;
+use App\Models\DetailTransaksi;
 use App\Models\Pelanggan;
 use App\Models\Outlet;
 use App\Models\Paket;
@@ -93,7 +94,7 @@ class TransaksiController extends Controller
             'status_bayar' => 'required',
         ]);
 
-        Transaksi::create([
+        $transaksi = Transaksi::create([
             'id_pelanggan' => $request->id_pelanggan,
             'id_outlet' => auth()->user()->id_outlet,
             'id_user' => auth()->id(),
@@ -104,6 +105,13 @@ class TransaksiController extends Controller
             'batas_waktu' => now()->addDays(3),
             'tgl_bayar' => $request->status_bayar == 'dibayar' ? now() : null,
             'total_harga' => $request->total_harga,
+        ]);
+
+        DetailTransaksi::create([
+            'id_transaksi' => $transaksi->id,
+            'id_paket' => Paket::first()->id,
+            'qty' => 5,
+            'subtotal' => $request->total_harga,
         ]);
 
         return redirect()->route('transaksi.index')

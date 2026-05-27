@@ -15,8 +15,16 @@
 </head>
 <body>
     <div class="btn-print-wrapper no-print">
-        <button onclick="window.print()" style="background: #0038cf; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">CETAK NOTA</button>
-        <button onclick="window.history.back()" style="background: #359df3; color: white; border: none; padding: 10px 200px border-radius: 5px; cursor: pointer;">KEMBALI</button>
+        <button onclick="window.print()" 
+        style="background: #0038cf; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+            CETAK NOTA
+        </button>
+
+        <button onclick="window.history.back()" 
+        style="background: #359df3; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer;">
+            KEMBALI
+        </button>
+        
     </div>
 
     <div class="text-center">
@@ -34,9 +42,6 @@
             <td colspan="2">{{ $transaksi->pelanggan->nm_pelanggan }}<br>{{ $transaksi->pelanggan->no_telp }}</td>
         </tr>
         <tr><td colspan="2">&nbsp;</td></tr>
-        <tr>
-            <td colspan="2"><strong>ITEMS :</strong></td>
-        </tr>
         @foreach($transaksi->details as $detail)
         <tr>
             <td>• {{ $detail->paket->nm_paket }}</td>
@@ -44,8 +49,19 @@
         </tr>
         @endforeach
         <tr>
+            <td><strong>Berat :</strong></td>
+            <td align="right">
+                <strong>{{ $transaksi->details->sum ('qty') }} kg</strong>
+            </td>
+        </tr>
+
+        <tr>
             <td><strong>Total :</strong></td>
-            <td align="right"><strong>{{ $transaksi->details->count() }} item</strong></td>
+            <td align="right">
+                <strong>
+                    Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}
+                </strong>
+            </td>
         </tr>
     </table>
 
