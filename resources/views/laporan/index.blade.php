@@ -73,10 +73,26 @@
 
         .main { margin-left: 240px; padding: 25px; }
 
-        .card-filter { border: 3px solid #3577f3; border-radius: 15px; background: white; padding: 25px; box-shadow: 0 3px 5px -1px rgba(53, 119, 243); }
+        .card-filter { 
+            border: 2px solid #3577f3; 
+            border-radius: 15px; 
+            background: white; 
+            padding: 25px; 
+        }
         .form-label-blue { color: #0650d1; font-weight: bold; font-size: 18px; }
         
-        .btn-tampilkan { background: #3577f3; color: white; border: none; padding: 10px 30px; font-weight: bold; border-radius: 8px; width: 100%; box-shadow: 0 4px 10px rgba(53, 119, 243); transition: 0.2s; }
+        .btn-tampilkan { 
+            background: #3577f3; 
+            color: white; 
+            border: none; 
+            padding: 10px 30px; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            width: 100%; 
+            height: 43px;
+            transition: 0.2s;
+         }
+
         .btn-tampilkan:hover { background: #1a4fbf; color: white; }
 
         .table-custom thead th {
@@ -108,7 +124,7 @@
 <div class="topbar">
     <div class="logo-header">
         <img src="{{ asset('images/logoputih.png') }}" width="45">
-        <span style="font-size: 24px;">BubbleBliss</span>
+        <span style="font-size: 26px;">BubbleBliss</span>
     </div>
     <div class="header-right px-4">
         <div>
@@ -222,9 +238,9 @@
                 <div class="col-md-4">
                     <label class="form-label-blue mb-2">Tanggal Awal</label>
                     <input type="text" name="tanggal_awal" value="{{ $tanggal_awal ?? '' }}" 
-                           placeholder="-- Pilih Tanggal Awal --" 
+                           placeholder="Pilih Tanggal Awal..." 
                            class="form-control shadow-sm py-2 text-primary" 
-                           style="border: 2px solid #3577f3;"
+                           style="border: 1.5px solid #3577f3; font-family: arial;"
                            onfocus="(this.type='date')" 
                            onblur="if(!this.value) this.type='text'" required>
                 </div>
@@ -232,9 +248,9 @@
                 <div class="col-md-4">
                     <label class="form-label-blue mb-2">Tanggal Akhir</label>
                     <input type="text" name="tanggal_akhir" value="{{ $tanggal_akhir ?? '' }}" 
-                           placeholder="-- Pilih Tanggal Akhir --" 
+                           placeholder="Pilih Tanggal Akhir..." 
                            class="form-control shadow-sm py-2 text-primary" 
-                           style="border: 2px solid #3577f3;"
+                           style="border: 1.5px solid #3577f3; font-family: arial;"
                            onfocus="(this.type='date')" 
                            onblur="if(!this.value) this.type='text'" required>
                 </div>
