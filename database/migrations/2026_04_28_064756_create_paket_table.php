@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_outlet')->constrained('outlet')->onDelete('cascade');
             $table->string('jenis', 20);
-            $table->string('nm_paket', 10);
+            $table->string('nm_paket');
             $table->integer('harga');
             $table->timestamps();
         });

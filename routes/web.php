@@ -1,43 +1,84 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PelangganController;
-use App\Http\Controllers\TransaksiController; // Tambahkan ini
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\OutletController;
+use App\Http\Controllers\PaketController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\LaporanController;
+use Illuminate\Support\Facades\Auth;
 
+// =====================================================
+// HALAMAN AWAL
+// =====================================================
 Route::get('/', function () {
     return view('welcome');
 });
 
-// LOGIN & LOGOUT
+// =====================================================
+// AUTH
+// =====================================================
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// DASHBOARD
-Route::get('/dashboard', function () {
-    return view('admin.dashboard');
-})->middleware('auth')->name('dashboard');
+// =====================================================
+// ROUTE SETELAH LOGIN (WAJIB LOGIN)
+// =====================================================
+Route::middleware('auth')->group(function () {
 
-// REGISTRASI PELANGGAN
-// Cukup gunakan resource, ini sudah mencakup create, store, edit, dll.
-Route::resource('pelanggan', PelangganController::class)->middleware('auth');
+    // DASHBOARD
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->name('dashboard');
 
-// ENTRI TRANSAKSI
-Route::middleware('auth')->prefix('transaksi')->group(function () {
-    // Halaman Utama (Tabel & Modal Tambah)
-    Route::get('/', [TransaksiController::class, 'index'])->name('transaksi.index');
+    // DATA MASTER (Menggunakan resource agar semua fungsi CRUD aktif)
+    Route::resource('outlet', OutletController::class);
+    Route::resource('pelanggan', PelangganController::class);
+    Route::resource('paket', PaketController::class);
+
+    //user 
+    Route::get('/user', [UserController::class, 'index'])->name('user.index');
+
+    Route::post('/user', [UserController::class, 'store'])->name('user.store');
+
+    Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
+
+    Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+    // =====================================================
+    // TRANSAKSI
+    // =====================================================
+    // Menggunakan resource penuh supaya tombol Tambah (create) 
+    // dan tombol Lihat (show) berfungsi tanpa error
+    Route::resource('transaksi', TransaksiController::class);
     
-    // Proses Simpan Pesanan
-    Route::post('/store', [TransaksiController::class, 'store'])->name('transaksi.store');
+    // Rute cetak nota (kustom)
+    Route::get('/transaksi/{id}/cetak', [TransaksiController::class, 'cetak'])
+        ->name('transaksi.cetak');
+
+    Route::get('/transaksi/{id}/nota',
+        [TransaksiController::class, 'nota'])
+        ->name('transaksi.nota');
+
+    // =====================================================
+    // LAPORAN
+    // =====================================================
+    Route::get('/laporan', [LaporanController::class, 'index'])
+        ->name('laporan.index');
+
+
+    Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])
+        ->name('laporan.cetak');
+
+    //logout
+    Route::post('/logout', function () {
+
+        Auth::logout();
+
+        return redirect('/login');
+
+    })->name('logout');
     
-    // Fitur Hapus (Sesuai fungsionalitas yang diminta)
-    Route::delete('/{id}', [TransaksiController::class, 'destroy'])->name('transaksi.destroy');
-    
-    // Fitur Cetak Nota (Membuka file nota.blade.php)
-    Route::get('/{id}/cetak', [TransaksiController::class, 'cetak'])->name('transaksi.cetak');
-    
-    // Opsional: Jika ingin ada halaman edit tersendiri
-    Route::get('/{id}/edit', [TransaksiController::class, 'edit'])->name('transaksi.edit');
-    Route::put('/{id}', [TransaksiController::class, 'update'])->name('transaksi.update');
 });

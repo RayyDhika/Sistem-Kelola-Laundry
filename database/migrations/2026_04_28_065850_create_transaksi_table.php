@@ -28,7 +28,7 @@ return new class extends Migration
             $table->decimal('diskon', 10,2)->default(0);
             $table->decimal('pajak', 10,2)->default(0);
             $table->decimal('total_harga', 10,2)->default(0);
-            $table->date('tgl_bayar');
+            $table->date('tgl_bayar')->nullable();
 
             $table->timestamps();
         });

@@ -13,8 +13,10 @@ class PelangganController extends Controller
     
     public function index()
     {
-        // Mengambil semua data dari tabel pelanggan
-        $pelanggans = Pelanggan::all();
+        $pelanggans = Pelanggan::where(
+            'id_outlet',
+            auth()->user()->id_outlet
+        )->get();
         // Mengirim data ke view create.blade.php agar tabel terisi
         return view('pelanggan.create', compact('pelanggans'));
     }
@@ -22,7 +24,10 @@ class PelangganController extends Controller
     public function create()
     {
         // Sama seperti index, agar saat akses /create tabel tetap muncul
-        $pelanggans = Pelanggan::all(); 
+       $pelanggans = Pelanggan::where(
+            'id_outlet',
+            auth()->user()->id_outlet
+            )->get();
         return view('pelanggan.create', compact('pelanggans'));
     }
 
@@ -43,6 +48,7 @@ class PelangganController extends Controller
         // Proses Insert ke Database
         // Pastikan nm_pelanggan dan no_telp sudah ada di $fillable di Model Pelanggan
         Pelanggan::create([
+            'id_outlet' => auth()->user()->id_outlet,
             'nm_pelanggan'  => $request->nm_pelanggan,
             'no_telp'       => $request->no_telp,
             'jenis_kelamin' => $request->jenis_kelamin,

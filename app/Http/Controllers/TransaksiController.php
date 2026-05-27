@@ -2,55 +2,184 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Pelanggan;
-use App\Models\Paket; // Asumsi ada model Paket
 use App\Models\Transaksi;
-use App\Models\DetailTransaksi;
+use App\Models\Pelanggan;
+use App\Models\Outlet;
+use App\Models\Paket;
+use Illuminate\Http\Request;
 
 class TransaksiController extends Controller
 {
-    public function index()
-    {
-        $pelanggans = Pelanggan::all();
-        $pakets = Paket::all();
-        $transaksis = Transaksi::with('pelanggan')->latest()->get();
-        return view('transaksi.index', compact('pelanggans', 'pakets', 'transaksis'));
-    }
+    // =========================
+    // INDEX
+    // =========================
+    public function index(Request $request)
+{
+    $idOutlet = auth()->user()->id_outlet;
+    $search = $request->search;
 
+    // TRANSAKSI
+    $transaksis = Transaksi::with(['pelanggan', 'outlet'])
+        ->where('id_outlet', $idOutlet)
+
+        ->when($search, function ($query, $search) {
+            $query->where('kode_invoice', 'like', "%{$search}%")
+                  ->orWhereHas('pelanggan', function ($q) use ($search) {
+                      $q->where('nm_pelanggan', 'like', "%{$search}%");
+                  });
+        })
+
+        ->latest()
+        ->get();
+
+    // PELANGGAN
+    $pelanggans = Pelanggan::where(
+        'id_outlet',
+        $idOutlet
+    )->get();
+
+    // PAKET
+    $pakets = Paket::where(
+        'id_outlet',
+        $idOutlet
+    )->get();
+
+    // OUTLET USER SAJA
+    $outlets = Outlet::where(
+        'id',
+        $idOutlet
+    )->get();
+
+    // COUNT
+    $countTransaksi = Transaksi::where(
+        'id_outlet',
+        $idOutlet
+    )->count();
+
+    $countProses = Transaksi::where(
+        'id_outlet',
+        $idOutlet
+    )
+    ->where('status', 'proses')
+    ->count();
+
+    $countSelesai = Transaksi::where(
+        'id_outlet',
+        $idOutlet
+    )
+    ->where('status', 'selesai')
+    ->count();
+
+    return view('transaksi.index', compact(
+        'transaksis',
+        'pelanggans',
+        'outlets',
+        'pakets',
+        'countTransaksi',
+        'countProses',
+        'countSelesai'
+    ));
+}
+
+    // =========================
+    // SIMPAN TRANSAKSI
+    // =========================
     public function store(Request $request)
     {
-        // Validasi dan Simpan Transaksi Utama
-        $transaksi = Transaksi::create([
-            'id_pelanggan' => $request->id_pelanggan,
-            'tgl' => now(),
-            'batas_waktu' => $request->estimasi_selesai,
-            'status' => 'baru',
-            'dibayar' => $request->metode_pembayaran == 'langsung' ? 'dibayar' : 'belum_dibayar',
-            'id_user' => auth()->id() ?? 1
+        $request->validate([
+            'id_pelanggan' => 'required',
+            'kode_invoice' => 'required',
+            'status' => 'required',
+            'status_bayar' => 'required',
         ]);
 
-        // Simpan Detail Pesanan dari Keranjang
-        foreach ($request->items as $item) {
-            DetailTransaksi::create([
-                'id_transaksi' => $transaksi->id,
-                'id_paket' => $item['id_paket'],
-                'qty' => $item['qty'],
-            ]);
-        }
+        Transaksi::create([
+            'id_pelanggan' => $request->id_pelanggan,
+            'id_outlet' => auth()->user()->id_outlet,
+            'id_user' => auth()->id(),
+            'kode_invoice' => $request->kode_invoice,
+            'status' => $request->status,
+            'status_bayar' => $request->status_bayar,
+            'tgl_masuk' => now(),
+            'batas_waktu' => now()->addDays(3),
+            'tgl_bayar' => $request->status_bayar == 'dibayar' ? now() : null,
+            'total_harga' => $request->total_harga,
+        ]);
 
-        return redirect()->back()->with('success', 'Pesanan berhasil ditambahkan!');
+        return redirect()->route('transaksi.index')
+            ->with('success', 'Transaksi berhasil ditambahkan!');
     }
 
+    // =========================
+    // DETAIL
+    // =========================
+    public function show($id)
+    {
+        $transaksi = Transaksi::with(['pelanggan', 'outlet'])
+            ->findOrFail($id);
+
+        return response()->json($transaksi);
+    }
+
+    // =========================
+    // EDIT
+    // =========================
+    public function edit($id)
+    {
+        $transaksi = Transaksi::findOrFail($id);
+
+        return view('transaksi.edit', compact('transaksi'));
+    }
+
+    // =========================
+    // UPDATE
+    // =========================
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required',
+            'status_bayar' => 'required',
+        ]);
+
+        $transaksi = Transaksi::findOrFail($id);
+
+        $transaksi->update([
+            'status' => $request->status,
+
+            'status_bayar' => $request->status_bayar,
+
+            'tgl_bayar' => $request->status_bayar == 'dibayar'
+                ? now()
+                : null,
+        ]);
+
+        return redirect()->route('transaksi.index')
+            ->with('success', 'Transaksi berhasil diupdate!');
+    }
+
+    // CETAK NOTA 
     public function nota($id)
     {
-        $transaksi = Transaksi::with(['pelanggan', 'details.paket'])->findOrFail($id);
+        $transaksi = Transaksi::with(['pelanggan', 'details.paket'])
+            ->findOrFail($id);
+
         return view('transaksi.nota', compact('transaksi'));
     }
-    
-    public function destroy($id)
+
+
+
+    // =========================
+    // HAPUS
+    // =========================
+public function destroy($id)
     {
-        Transaksi::find($id)->delete();
-        return redirect()->back()->with('success', 'Data transaksi berhasil dihapus!');
+        $transaksi = Transaksi::findOrFail($id);
+
+        $transaksi->delete();
+
+        return redirect()->route('transaksi.index')
+            ->with('success', 'Transaksi berhasil dihapus!');
     }
+
+
 }

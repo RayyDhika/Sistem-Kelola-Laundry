@@ -27,7 +27,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_outlet')->nullable();
 
             // ROLE
-            $table->enum('role', ['admin', 'kasir'])->default('kasir');
+            $table->enum('role', ['owner', 'admin', 'kasir'])->default('kasir');
 
             $table->timestamps();
         });

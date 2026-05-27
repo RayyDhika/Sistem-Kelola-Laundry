@@ -52,13 +52,13 @@
     <div class="line"></div>
 
     <div style="font-size: 0.9em;">
-        TGL ORDER: {{ $transaksi->tgl->format('d/m/Y') }}<br>
-        ESTIMASI SELESAI: {{ $transaksi->batas_waktu->format('d/m/Y') }}
+        TGL ORDER: {{ \Carbon\Carbon::parse($transaksi->tgl_masuk)->format('d/m/Y') }}<br>
+        ESTIMASI SELESAI: {{ \Carbon\Carbon::parse($transaksi->batas_waktu)->format('d/m/Y') }}
     </div>
 
     <div class="text-center" style="margin-top: 15px;">
         STATUS: {{ strtoupper($transaksi->status) }}
-        <div class="box" style="font-size: 1em;">PEMBAYARAN {{ $transaksi->dibayar == 'dibayar' ? 'LUNAS' : 'BELUM LUNAS' }}</div>
+        <div class="box" style="font-size: 1em;">PEMBAYARAN {{ $transaksi->status_bayar == 'dibayar' ? 'LUNAS' : 'BELUM LUNAS' }}</div>
     </div>
 
     <p class="text-center" style="font-size: 0.8em; margin-top: 20px;">Terima kasih atas kepercayaan anda!</p>

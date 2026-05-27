@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,11 +9,17 @@ class Paket extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['id_outlet', 'jenis','nm_paket', 'harga'];
+    protected $table = 'paket';
 
-    // Relasi ke Detail Transaksi
-    public function details()
+    protected $fillable = [
+        'id_outlet',
+        'jenis',
+        'nm_paket',
+        'harga'
+    ];
+
+    public function outlet()
     {
-        return $this->hasMany(DetailTransaksi::class, 'id_paket');
+        return $this->belongsTo(Outlet::class, 'id_outlet');
     }
 }

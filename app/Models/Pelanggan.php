@@ -15,9 +15,15 @@ class Pelanggan extends Model
     // Penanda kolom yang BOLEH diisi (Mass Assignment)
     // Sesuaikan dengan nama di migration kamu
     protected $fillable = [
+        'id_outlet',
         'nm_pelanggan', 
         'jenis_kelamin', 
         'no_telp', 
         'alamat'
     ];
+
+    public function outlet()
+    {
+        return $this->belongsTo(Outlet::class, 'id_outlet');
+    }
 }
