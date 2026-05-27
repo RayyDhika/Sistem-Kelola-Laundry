@@ -20,9 +20,22 @@
             <div class="mb-3">
                 <label class="form-label text-primary fw-bold">Status Pembayaran</label>
 
-                <select name="status_bayar" class="form-select">
-                    <option value="belum" {{ $transaksi->status_bayar == 'belum' ? 'selected' : '' }}>Belum Lunas</option>
-                    <option value="dibayar" {{ $transaksi->status_bayar == 'dibayar' ? 'selected' : '' }}>Lunas</option>
+                {{ $transaksi->status_bayar }}
+
+                <select name="status_bayar" 
+                        class="form-select">
+
+                    
+                    <option value="dibayar" 
+                        {{ $transaksi->status_bayar == 'dibayar' ? 'selected' : '' }}>
+                        Lunas
+                    </option>
+                    
+                    <option value="belum" 
+                        {{ $transaksi->status_bayar == 'belum' ? 'selected' : '' }}>
+                        Belum Lunas
+                    </option>
+            
                 </select>
             </div>
         </div>

@@ -651,16 +651,14 @@
 
                                 <button class="btn btn-sm btn-primary text-white"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#modalEditUser{{ $u->id }}"
-                                        style="width:38px; height: 35px;">
+                                        data-bs-target="#modalEditUser{{ $u->id }}">
 
                                     <i class="fa fa-edit"></i
 
                                 </button>
 
                                 <button class="btn btn-sm btn-danger"
-                                onclick="konfirmasiHapus({{ $u->id }})"
-                                style="width:38px; height: 35px;">
+                                onclick="konfirmasiHapus({{ $u->id }})">
 
                                     <i class="fa fa-trash"></i>
 
@@ -733,6 +731,7 @@
                         <input type="text"
                                name="name"
                                class="form-control"
+                               placeholder="Masukan Nama Lengkap"
                                required>
                     </div>
 
@@ -746,19 +745,34 @@
                         <input type="email"
                                name="email"
                                class="form-control"
+                               placeholder="Masukan Email"
                                required>
                     </div>
 
                     <!-- TELEPON -->
-                    <div class="col-md-0 mb-3">
+                    <div class="col-md-12 mb-3">
 
                         <label class="form-label">
                             Nomor Telepon
                         </label>
 
+                         <div class="d-flex gap-2">
+
+                        <!-- kode negara -->
                         <input type="text"
-                               name="telepon"
-                               class="form-control">
+                                id="kode_negara"
+                                class="form-control"
+                                placeholder="+"
+                                style="max-width:90px;">
+
+                        <!-- nomor -->
+                        <input type="text"
+                                name="telepon"
+                                id="telepon"
+                                class="form-control"
+                                placeholder="Masukan Nomor Telepon">
+
+                        </div>
                     </div>
 
                     <!-- JK -->
@@ -796,6 +810,7 @@
                                    name="password"
                                    id="passwordInput"
                                    class="form-control"
+                                   placeholder="Masukan Password"
                                    required>
 
                             <span class="input-group-text"
@@ -823,7 +838,7 @@
                             required>
 
                         <option value="">
-                            -- Pilih Outlet --
+                            Pilih Outlet
                         </option>
 
                         @foreach($outlets as $outlet)
@@ -1039,6 +1054,56 @@ function konfirmasiHapus(id){
         showConfirmButton: false
     });
 @endif
+</script>
+
+<!-- telepon --> 
+ <script>
+
+const kodeNegara = document.getElementById('kode_negara');
+const telepon = document.getElementById('telepon');
+
+
+// FORMAT KODE NEGARA
+kodeNegara.addEventListener('input', function(e){
+
+    let value = e.target.value;
+
+    value = value.replace(/[^\d+]/g,'');
+
+    if(!value.startsWith('+')){
+        value = '+' + value.replace(/\+/g,'');
+    }
+
+    e.target.value = value;
+
+});
+
+
+// FORMAT NOMOR
+telepon.addEventListener('input', function(e){
+
+    let value = e.target.value;
+
+    value = value.replace(/\D/g,'');
+
+    let hasil = '';
+
+    if(value.length > 0){
+        hasil += value.substring(0,3);
+    }
+
+    if(value.length > 3){
+        hasil += '-' + value.substring(3,7);
+    }
+
+    if(value.length > 7){
+        hasil += '-' + value.substring(7,15);
+    }
+
+    e.target.value = hasil;
+
+});
+
 </script>
 
 </body>

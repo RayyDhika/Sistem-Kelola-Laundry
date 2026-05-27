@@ -387,12 +387,11 @@
                             <div class="d-flex justify-content-center gap-2">
                                 <button class="btn btn-sm btn-primary text-white" 
                                 data-bs-toggle="modal" 
-                                data-bs-target="#modalEdit{{ $p->id }}"
-                                style="width:38px; height:35px;">
+                                data-bs-target="#modalEdit{{ $p->id }}">
                                    
                             <i class="fa fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="konfirmasiHapus({{ $p->id }})" style="width:38px; height:35px;">
+                                <button class="btn btn-sm btn-danger" onclick="konfirmasiHapus({{ $p->id }})">
                                     <i class="fa fa-trash"></i>
                                 </button>
                                 <form id="form-hapus-{{ $p->id }}" action="{{ route('paket.destroy', $p->id) }}" method="POST" style="display:none;">

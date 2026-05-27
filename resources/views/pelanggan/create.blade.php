@@ -116,7 +116,16 @@
         .radio-box,
         .form-check-label {
             font-family: Arial, Helvetica, sans-serif !important;
-        }   
+        }
+        
+        .form-check-input {
+            width: 20px;
+            height: 20px;
+            accent-color: #0649ca;
+            border: 1px solid #0649ca !important;
+            box-shadow: none !important;
+        }
+        
         .radio-box { border: 1px solid #60a5fa; border-radius: 8px; padding: 10px 15px; height: 45px; display: flex; align-items: center; gap: 20px; }
         .btn-add { background: #4f7df3; color: white; border: none; border-radius: 8px; padding: 10px 18px; }
         .btn-simpan { background: #0649ca; color: white; border: none; border-radius: 8px; padding: 10px 35px; }
@@ -323,11 +332,35 @@
                     <div class="col-md-6">
                         <div class="section-box">
                             <label class="form-label-blue">Nama Pelanggan</label>
-                            <input type="text" name="nm_pelanggan" class="form-control" required>
+                            <input type="text" 
+                                    name="nm_pelanggan" 
+                                    class="form-control" 
+                                    placeholder="Masukan Nama Pelanggan..."
+                                    required>
                         </div>
                         <div class="section-box">
                             <label class="form-label-blue">No Telepon</label>
-                            <input type="text" name="no_telp" class="form-control" required>
+                            <div class="d-flex gap-2">
+                                
+                                 <!-- kode negara -->
+                                <input type="text"
+                                        id="kode_negara"
+                                        class="form-control"
+                                        placeholder="+"
+                                        style="max-width:90px;"
+                                        maxlength="4">
+
+                                <!-- nomor -->
+                                <input type="text"
+                                        name="no_telp"
+                                        id="no_telp"
+                                        class="form-control"
+                                        placeholder="Masukan Nomor Telepon"
+                                        maxlength="15"
+                                        required>
+
+                            </div>
+
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -346,7 +379,11 @@
                         </div>
                         <div class="section-box">
                             <label class="form-label-blue">Alamat</label>
-                            <textarea name="alamat" class="form-control" rows="4" required></textarea>
+                            <textarea name="alamat" 
+                                        class="form-control" 
+                                        rows="4" 
+                                        placeholder="Masukan Alamat Lengkap..."
+                                        required></textarea>
                         </div>
                     </div>
                 </div>
@@ -510,6 +547,81 @@
 
     });
 
+</script>
+
+<!-- no telepon -->
+
+<script>
+
+const kodeNegara = document.getElementById('kode_negara');
+const nomorTelp = document.getElementById('no_telp');
+
+
+// FORMAT KODE NEGARA
+kodeNegara.addEventListener('input', function(e){
+
+    let value = e.target.value;
+
+    value = value.replace(/[^\d+]/g,'');
+
+    if(!value.startsWith('+')){
+        value = '+' + value.replace(/\+/g,'');
+    }
+
+    e.target.value = value;
+
+});
+
+
+// FORMAT NOMOR
+nomorTelp.addEventListener('input', function(e){
+
+    let value = e.target.value;
+
+    value = value.replace(/\D/g,'');
+
+    let hasil = '';
+
+    if(value.length > 0){
+        hasil += value.substring(0,3);
+    }
+
+    if(value.length > 3){
+        hasil += '-' + value.substring(3,7);
+    }
+
+    if(value.length > 7){
+        hasil += '-' + value.substring(7,15);
+    }
+
+    e.target.value = hasil;
+
+});
+
+</script>
+
+<!--nptifikasi -->
+
+<script>
+@if(session('success'))
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: "{{ session('success') }}",
+        timer: 2000,
+        showConfirmButton: false
+    });
+@endif
+
+@if(session('error'))
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops!',
+        text: "{{ session('error') }}",
+        timer: 2000,
+        showConfirmButton: false
+    });
+@endif
 </script>
 
 </body>

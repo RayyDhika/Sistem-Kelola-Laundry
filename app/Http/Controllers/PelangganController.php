@@ -47,6 +47,7 @@ class PelangganController extends Controller
 
         // Proses Insert ke Database
         // Pastikan nm_pelanggan dan no_telp sudah ada di $fillable di Model Pelanggan
+        
         Pelanggan::create([
             'id_outlet' => auth()->user()->id_outlet,
             'nm_pelanggan'  => $request->nm_pelanggan,
@@ -54,6 +55,9 @@ class PelangganController extends Controller
             'jenis_kelamin' => $request->jenis_kelamin,
             'alamat'        => $request->alamat,
         ]);
+
+         return redirect()->route('pelanggan.index')
+                     ->with('success', 'Data pelanggan berhasil ditambahkan!');
 
         // Kembali ke halaman sebelumnya dengan pesan sukses (SweetAlert)
         return redirect()->route('pelanggan.create')->with('success', 'DATA PELANGGAN BERHASIL DITAMBAHKAN');

@@ -494,8 +494,7 @@
 
                                 <button class="btn btn-sm btn-primary text-white"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modalEdit{{ $o->id }}"
-                                    style="width:38px; height:35px;">
+                                    data-bs-target="#modalEdit{{ $o->id }}">
 
 
                                     <i class="fa fa-edit"></i>
@@ -503,8 +502,7 @@
                                 </button>
 
                                 <button class="btn btn-sm btn-danger"
-                                    onclick="konfirmasiHapus({{ $o->id }})"
-                                    style="width:38px; height:35px;">
+                                    onclick="konfirmasiHapus({{ $o->id }})">
 
                                     <i class="fa fa-trash"></i>
 
@@ -583,10 +581,21 @@
                             No TLP :
                         </label>
 
-                        <div class="col-sm-9">
+                        <div class="col-sm-9 d-flex gap-2">
+
+                            <!--kode negara-->
+
+                             <input type="text"
+                                    id="kode_negara"
+                                    class="form-control"
+                                    placeholder="+"
+                                    style="max-width:90px;">
+                            
+                            <!-- nomor -->
                             <input type="text"
                                 name="no_telp"
                                 class="form-control"
+                                id="telepon"
                                 placeholder="Masukan Nomor Telepon"
                                 required>
                         </div>
@@ -687,12 +696,23 @@
                             No TLP :
                         </label>
 
-                        <div class="col-sm-9">
-                            <input type="text"
+                        <div class="col-sm-9 d-flex gap-2">
+
+                        <!-- kode negara -->        
+                        <input type="text"
+                                id="kode_negara_edit{{ $o->id }}"
+                                class="form-control"
+                                value="+62"
+                                style="max-width:90px;">
+
+                        <!-- nomor -->
+                        <input type="text"
                                 name="no_telp"
+                                id="telepon_edit{{ $o->id }}"
                                 value="{{ $o->no_telp }}"
                                 class="form-control"
                                 required>
+
                         </div>
 
                     </div>
@@ -835,6 +855,110 @@
         });
 
     });
+
+</script>
+
+<!-- no tlp -->
+
+<script>
+
+const kodeNegara = document.getElementById('kode_negara');
+const telepon = document.getElementById('telepon');
+
+
+// FORMAT KODE NEGARA
+kodeNegara.addEventListener('input', function(e){
+
+    let value = e.target.value;
+
+    value = value.replace(/[^\d+]/g,'');
+
+    if(!value.startsWith('+')){
+        value = '+' + value.replace(/\+/g,'');
+    }
+
+    e.target.value = value;
+
+});
+
+
+// FORMAT NOMOR
+telepon.addEventListener('input', function(e){
+
+    let value = e.target.value;
+
+    value = value.replace(/\D/g,'');
+
+    let hasil = '';
+
+    if(value.length > 0){
+        hasil += value.substring(0,3);
+    }
+
+    if(value.length > 3){
+        hasil += '-' + value.substring(3,7);
+    }
+
+    if(value.length > 7){
+        hasil += '-' + value.substring(7,15);
+    }
+
+    e.target.value = hasil;
+
+});
+
+</script>
+
+<script>
+
+@foreach($outlets as $o)
+
+const kodeNegaraEdit{{ $o->id }} = document.getElementById('kode_negara_edit{{ $o->id }}');
+const teleponEdit{{ $o->id }} = document.getElementById('telepon_edit{{ $o->id }}');
+
+
+// FORMAT KODE NEGARA EDIT
+kodeNegaraEdit{{ $o->id }}.addEventListener('input', function(e){
+
+    let value = e.target.value;
+
+    value = value.replace(/[^\d+]/g,'');
+
+    if(!value.startsWith('+')){
+        value = '+' + value.replace(/\+/g,'');
+    }
+
+    e.target.value = value;
+
+});
+
+
+// FORMAT NOMOR EDIT
+teleponEdit{{ $o->id }}.addEventListener('input', function(e){
+
+    let value = e.target.value;
+
+    value = value.replace(/\D/g,'');
+
+    let hasil = '';
+
+    if(value.length > 0){
+        hasil += value.substring(0,3);
+    }
+
+    if(value.length > 3){
+        hasil += '-' + value.substring(3,7);
+    }
+
+    if(value.length > 7){
+        hasil += '-' + value.substring(7,15);
+    }
+
+    e.target.value = hasil;
+
+});
+
+@endforeach
 
 </script>
 
