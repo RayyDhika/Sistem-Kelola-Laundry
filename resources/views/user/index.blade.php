@@ -224,7 +224,7 @@
 
         /* TEXT */
         .nama-user{
-            font-size: 18px;
+            font-size: 15px;
             color: #0050d7;
         }
 
@@ -576,7 +576,7 @@
                                         {{ $u->name }}
                                     </div>
 
-                                    <small style="color:#7aa6ff;">
+                                    <small style="color: #7aa6ff; font-size: 12px;">
                                         {{ $u->telepon }}
                                     </small>
 

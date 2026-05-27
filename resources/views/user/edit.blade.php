@@ -9,7 +9,7 @@
 
                 <h5 class="modal-title fw-bold text-primary">
 
-                    <i class="fa fa-edit me-2"></i>
+                    <i></i>
                     Edit Pengguna
 
                 </h5>

@@ -7,7 +7,7 @@
             <div class="modal-header border-0 pb-0">
 
                 <h5 class="modal-title fw-bold">
-                    <i class="fa fa-edit me-2"></i>
+                    <i></i>
                     EDIT DATA PAKET
                 </h5>
 
