@@ -719,6 +719,8 @@
                    id="totalHargaInput"
                    value="0">
 
+            <div id="hiddenInputs"></div>
+
                 <input type="hidden"
                        name="status"
                        value="proses">
@@ -848,6 +850,7 @@
                                     </label>
 
                                     <input type="date"
+                                           name="batas_waktu"
                                            class="form-control">
 
                                 </div>
@@ -1006,6 +1009,37 @@
             </div>
 
             <div class="mb-2">
+    <b>Paket Laundry:</b><br>
+
+    @foreach($t->details as $detail)
+
+        <div class="border rounded-3 p-2 mb-2"
+             style="background:#f8fbff;">
+
+            <span class="detail-value">
+                {{ $detail->paket->nm_paket ?? '-' }}
+            </span>
+
+            <br>
+
+            <small style="color:#6b8bd6;">
+                {{ $detail->qty }} x 
+                Rp {{ number_format($detail->paket->harga ?? 0,0,',','.') }}
+            </small>
+
+            <br>
+
+            <b style="font-size:13px;">
+                Subtotal :
+                Rp {{ number_format(($detail->qty * ($detail->paket->harga ?? 0)),0,',','.') }}
+            </b>
+
+        </div>
+
+    @endforeach
+</div>
+
+            <div class="mb-2">
                 <b>Total Harga:</b><br>
                 
                 <span class="detail-value">
@@ -1151,79 +1185,169 @@
 
 <script>
 
-    let total = 0;
+let total = 0;
+let keranjang = [];
 
-    function tambahKeranjang(){
+function tambahKeranjang(){
 
-        let paket =
-            document.getElementById('paketSelect');
+    let paket =
+        document.getElementById('paketSelect');
 
-        let jumlah =
-            document.getElementById('jumlahInput').value;
+    let jumlah =
+        document.getElementById('jumlahInput').value;
 
-        if(paket.selectedIndex == 0 || jumlah == ''){
+    if(paket.selectedIndex == 0 || jumlah == ''){
 
-            alert('Pilih paket & jumlah');
+        alert('Pilih paket & jumlah');
 
-            return;
-        }
+        return;
+    }
 
-        let nama =
-            paket.options[paket.selectedIndex].text;
+    let nama =
+        paket.options[paket.selectedIndex].text;
 
-        let harga = parseInt(
-            paket.options[paket.selectedIndex]
-            .getAttribute('data-harga')
-        );
+    let harga = parseInt(
+        paket.options[paket.selectedIndex]
+        .getAttribute('data-harga')
+    );
 
-        let subtotal = harga * jumlah;
+    let subtotal = harga * jumlah;
 
-        total += subtotal;
+    let idPaket = paket.value;
 
-        let cart =
-            document.getElementById('cartBox');
+    total += subtotal;
 
-        if(cart.innerHTML.includes('Keranjang')){
+    keranjang.push({
+        id_paket: idPaket,
+        qty: jumlah
+    });
 
-            cart.innerHTML = '';
-        }
+    let cart =
+        document.getElementById('cartBox');
 
-        cart.innerHTML += `
+    if(cart.innerHTML.includes('Keranjang')){
 
-            <div style="
-                background:white;
-                border:1px solid #bfd7ff;
-                border-radius:10px;
-                padding:10px;
-                margin-bottom:10px;
-                color:#3467eb;
-                font-size:12px;
+        cart.innerHTML = '';
+    }
+
+    let item = document.createElement('div');
+
+    item.style = `
+        background:white;
+        border:1px solid #bfd7ff;
+        border-radius:10px;
+        padding:10px;
+        margin-bottom:10px;
+        color:#3467eb;
+        font-size:12px;
+        position:relative;
+    `;
+
+    item.innerHTML = `
+
+        <button type="button"
+            onclick="hapusItem(this, ${subtotal}, ${keranjang.length - 1})"
+            style="
+                position:absolute;
+                top:6px;
+                right:8px;
+                border:none;
+                background:red;
+                color:white;
+                border-radius:50%;
+                width:20px;
+                height:20px;
+                font-size:11px;
+                cursor:pointer;
             ">
+            x
+        </button>
 
-                <b>${nama}</b><br>
+        <b>${nama}</b><br>
 
-                Qty : ${jumlah}<br>
+        Qty : ${jumlah}<br>
 
-                Rp ${subtotal.toLocaleString()}
+        Rp ${subtotal.toLocaleString()}
+
+    `;
+
+    cart.appendChild(item);
+
+    updateTotal();
+
+    renderHiddenInputs();
+
+}
+
+function hapusItem(button, subtotal,index){
+
+    button.parentElement.remove();
+
+    total -= subtotal;
+
+    keranjang.splice(index, 1);
+
+    updateTotal();
+
+    renderHiddenInputs();
+
+    let cart =
+        document.getElementById('cartBox');
+
+    if(cart.children.length == 0){
+
+        cart.innerHTML = `
+            <div class="cart-empty">
+
+                <i class="fa fa-cart-shopping"></i>
+
+                <p>
+                    Keranjang Pesanan Kosong
+                </p>
 
             </div>
-
         `;
-
-        document.getElementById('subtotalText')
-            .innerHTML =
-            'Rp ' + total.toLocaleString();
-
-        document.getElementById('totalText')
-            .innerHTML =
-            'Rp ' + total.toLocaleString();
-
-        document.getElementById('totalHargaInput').value = total;
-
-        console.log(total);
-        console.log(document.getElementById('totalHargaInput').value);
-
     }
+
+}
+
+function updateTotal(){
+
+    document.getElementById('subtotalText')
+        .innerHTML =
+        'Rp ' + total.toLocaleString();
+
+    document.getElementById('totalText')
+        .innerHTML =
+        'Rp ' + total.toLocaleString();
+
+    document.getElementById('totalHargaInput').value = total;
+
+}
+
+
+function renderHiddenInputs(){
+
+    let hiddenDiv =
+        document.getElementById('hiddenInputs');
+
+    hiddenDiv.innerHTML = '';
+
+    keranjang.forEach((item, index) => {
+
+        hiddenDiv.innerHTML += `
+
+            <input type="hidden"
+                   name="items[${index}][id_paket]"
+                   value="${item.id_paket}">
+
+            <input type="hidden"
+                   name="items[${index}][qty]"
+                   value="${item.qty}">
+        `;
+    });
+
+}
 
 </script>
 

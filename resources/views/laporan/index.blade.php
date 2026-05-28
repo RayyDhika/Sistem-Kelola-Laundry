@@ -319,19 +319,21 @@
         </td>
 
         <td>
-            {{ $t->pelanggan->nama ?? 'Umum' }}
+            {{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}
         </td>
 
         <td>
-            {{ $t->paket->nama_paket ?? 'Kiloan' }}
+            @foreach ($t->details as $detail)
+                {{ $detail->paket->nm_paket ?? '-'  }}<br>
+            @endforeach
         </td>
 
         <td>
-            {{ $t->qty ?? 0 }} KG
+            {{ $t->details->sum('qty')}} KG
         </td>
 
         <td>
-            {{ \Carbon\Carbon::parse($t->tgl_transaksi)->format('d/m/Y') }}
+            {{ \Carbon\Carbon::parse($t->tgl_masuk)->format('d/m/Y') }}
         </td>
 
         <td class="text-primary font-weight-bold">

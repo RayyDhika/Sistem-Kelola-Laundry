@@ -20,7 +20,11 @@ class TransaksiController extends Controller
     $search = $request->search;
 
     // TRANSAKSI
-    $transaksis = Transaksi::with(['pelanggan', 'outlet'])
+    $transaksis = Transaksi::with([
+        'pelanggan', 
+        'outlet',
+        'details.paket'
+    ])
         ->where('id_outlet', $idOutlet)
 
         ->when($search, function ($query, $search) {
@@ -86,37 +90,47 @@ class TransaksiController extends Controller
     // SIMPAN TRANSAKSI
     // =========================
     public function store(Request $request)
-    {
-        $request->validate([
-            'id_pelanggan' => 'required',
-            'kode_invoice' => 'required',
-            'status' => 'required',
-            'status_bayar' => 'required',
-        ]);
+{
+    $request->validate([
+        'id_pelanggan' => 'required',
+        'kode_invoice' => 'required',
+        'status' => 'required',
+        'status_bayar' => 'required',
+        'items' => 'required|array'
+    ]);
 
-        $transaksi = Transaksi::create([
-            'id_pelanggan' => $request->id_pelanggan,
-            'id_outlet' => auth()->user()->id_outlet,
-            'id_user' => auth()->id(),
-            'kode_invoice' => $request->kode_invoice,
-            'status' => $request->status,
-            'status_bayar' => $request->status_bayar,
-            'tgl_masuk' => now(),
-            'batas_waktu' => now()->addDays(3),
-            'tgl_bayar' => $request->status_bayar == 'dibayar' ? now() : null,
-            'total_harga' => $request->total_harga,
-        ]);
+    // SIMPAN TRANSAKSI
+    $transaksi = Transaksi::create([
+        'id_pelanggan' => $request->id_pelanggan,
+        'id_outlet' => auth()->user()->id_outlet,
+        'id_user' => auth()->id(),
+        'kode_invoice' => $request->kode_invoice,
+        'status' => $request->status,
+        'status_bayar' => $request->status_bayar,
+        'tgl_masuk' => now(),
+        'batas_waktu' => $request->batas_waktu,
+        'tgl_bayar' => $request->status_bayar == 'dibayar'
+            ? now()
+            : null,
+        'total_harga' => $request->total_harga,
+    ]);
+
+    // SIMPAN DETAIL TRANSAKSI
+    foreach ($request->items as $item) {
+
+        $paket = Paket::find($item['id_paket']);
 
         DetailTransaksi::create([
             'id_transaksi' => $transaksi->id,
-            'id_paket' => Paket::first()->id,
-            'qty' => 5,
-            'subtotal' => $request->total_harga,
+            'id_paket' => $item['id_paket'],
+            'qty' => $item['qty'],
+            'subtotal' => $paket->harga * $item['qty'],
         ]);
-
-        return redirect()->route('transaksi.index')
-            ->with('success', 'Transaksi berhasil ditambahkan!');
     }
+
+    return redirect()->route('transaksi.index')
+        ->with('success', 'Transaksi berhasil ditambahkan!');
+}
 
     // =========================
     // DETAIL
@@ -145,8 +159,11 @@ class TransaksiController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'id_pelanggan' => 'required',
+            'kode_invoice' => 'required',
             'status' => 'required',
             'status_bayar' => 'required',
+            'batas_waktu' => 'required|date',
         ]);
 
         $transaksi = Transaksi::findOrFail($id);

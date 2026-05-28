@@ -291,7 +291,16 @@
                         </td>
                         <td class="text-center">{{ $p->no_telp }}</td>
                         <td class="text-center">
-                            <span class="badge bg-info text-dark">{{ $p->jenis_kelamin }}</span>
+                            @if($p->jenis_kelamin == 'L')
+                                <span class="badge bg-primary">
+                                    {{ $p->jenis_kelamin }}
+                                </span>
+                             @else
+                                <span class="badge bg-pink text-white"
+                                      style="background:#ff69b4;">
+                                    {{ $p->jenis_kelamin }}
+                                </span>
+                             @endif
                         </td>
                         <td>{{ $p->alamat }}</td>
                         <td class="text-center">
