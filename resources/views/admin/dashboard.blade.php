@@ -206,12 +206,12 @@
              <!-- INFO -->
             <div class="border rounded-4 p-3 mt-3">
 
-                <p class="mb-2 text-primary fw-bold">
+                <p class="mb-2 text-primary" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-user me-2"></i>
                     Role: Admin
                 </p>
 
-                <p class="mb-0 fw-bold text-success">
+                <p class="mb-0 text-success" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-circle me-2"></i>
                     Status: Aktif
                 </p>
@@ -279,7 +279,7 @@
 
     <div class="menu-title-main">LAINNYA</div>
 
-    <a href="{{ route('laporan.index') }}">
+    <a href="{{ route('kasir.laporan') }}">
         <i class="fa fa-file me-2"></i> Laporan
     </a>
 
@@ -290,7 +290,7 @@
 
     <div class="welcome-card">
         <h4 class="mb-1" style="color: #0650d1; font-size: 28px;">
-            Halo, Admin!
+            Halo, {{ auth()->user()->name }}! 
         </h4>
 
         <p class="mb-0" style="color: #5691f6">

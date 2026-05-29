@@ -268,12 +268,12 @@
              <!-- INFO -->
             <div class="border rounded-4 p-3 mt-3">
 
-                <p class="mb-2 text-primary fw-bold">
+                <p class="mb-2 text-primary" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-user me-2"></i>
                     Role: Admin
                 </p>
 
-                <p class="mb-0 fw-bold text-success">
+                <p class="mb-0 text-success" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-circle me-2"></i>
                     Status: Aktif
                 </p>
@@ -355,15 +355,38 @@
 
     <div class="card-custom">
         <div class="table-header">
-            <h4 class="table-title">DATA PAKET CUCIAN</h4>
+    <h4 class="table-title">DATA PAKET CUCIAN</h4>
 
-            <button class="btn-add" 
-                data-bs-toggle="modal" 
+    <div class="d-flex align-items-center gap-3">
+
+        <!-- SEARCH -->
+        <div class="search-box position-relative">
+            <i class="fa fa-search position-absolute"
+               style="left:12px; top:13px; color:#3b82f6;"></i>
+
+            <input type="text"
+                   id="searchTransaksi"
+                   class="form-control"
+                   placeholder="Cari Paket..."
+                   style="
+                        padding-left:35px;
+                        width:260px;
+                        height:43px;
+                        font-size:16px;
+                        border:1.3px solid #3577f3;
+                        border-radius:12px;">
+        </div>
+
+        <!-- BUTTON -->
+        <button class="btn-add"
+                data-bs-toggle="modal"
                 data-bs-target="#modalTambah">
 
-                <i class="fa fa-plus me-2"></i> TAMBAH PAKET
-            </button>
-        </div>
+            <i class="fa fa-plus me-2"></i> TAMBAH PAKET
+        </button>
+
+    </div>
+</div>
 
         <div class="table-responsive">
             <table class="table table-custom">
@@ -579,6 +602,36 @@ document.querySelector('form').addEventListener('submit', function(){
         });
 
     });
+
+</script>
+
+<!-- search -->
+
+<script>
+
+document.getElementById('searchTransaksi').addEventListener('keyup', function(){
+
+    let keyword = this.value.toLowerCase();
+
+    let rows = document.querySelectorAll('.table-custom tbody tr');
+
+    rows.forEach(function(row){
+
+        let text = row.innerText.toLowerCase();
+
+        if(text.includes(keyword)){
+
+            row.style.display = '';
+
+        } else {
+
+            row.style.display = 'none';
+
+        }
+
+    });
+
+});
 
 </script>
 

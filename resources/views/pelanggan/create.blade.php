@@ -192,12 +192,12 @@
              <!-- INFO -->
             <div class="border rounded-4 p-3 mt-3">
 
-                <p class="mb-2 text-primary fw-bold">
+                <p class="mb-2 text-primary" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-user me-2"></i>
-                    Role: Admin
+                    Role: {{ ucfirst(auth()->user()->role) }}
                 </p>
 
-                <p class="mb-0 fw-bold text-success">
+                <p class="mb-0 text-success" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-circle me-2"></i>
                     Status: Aktif
                 </p>
@@ -231,19 +231,40 @@
 
 <div class="sidebar text-white">
     <div class="menu-title-main">MENU UTAMA</div>
-    <a href="{{ route('dashboard') }}"><i class="fa fa-home me-2"></i> Beranda</a>
+
+    @if(auth()->user()->role == 'admin')
+        <a href="{{ route('dashboard') }}">
+            <i class="fa fa-home me-2"></i> Beranda
+        </a>
+
+     @else
+
+        <a href="{{ route('kasir.dashboard') }}">
+            <i class="fa fa-home me-2"></i> Beranda
+        </a>
+
+    @endif
+
 
     <div class="menu-title-main">TRANSAKSI</div>
-    <a href="{{ route('pelanggan.index') }}" class="active-menu"><i class="fa fa-user-plus me-2"></i> Register Pelanggan</a>
-    <a href="{{ route('transaksi.index') }}"><i class="fa fa-cart-plus me-2"></i> Entri Transaksi</a>
 
-    <div class="menu-title-main">DATA</div>
-    <a href="{{ route('user.index') }}"><i class="fa fa-user me-2"></i> Data Pengguna</a>
-    <a href="{{ route('outlet.index') }}"><i class="fa fa-shop me-2"></i> Data Outlet</a>
-    <a href="{{ route('paket.index') }}"><i class="fa fa-box me-2"></i> Data Paket</a>
+    <a href="{{ route('pelanggan.index') }}" class="active-menu">
+        <i class="fa fa-user-plus me-2"></i> Register Pelanggan
+    </a>
+
+    <a href="{{ route('transaksi.index') }}">
+        <i class="fa fa-cart-plus me-2"></i> Entri Transaksi
+    </a>
+
+    @if(auth()->user()->role == 'admin')
+        <div class="menu-title-main">DATA</div>
+        <a href="{{ route('user.index') }}"><i class="fa fa-user me-2"></i> Data Pengguna</a>
+        <a href="{{ route('outlet.index') }}"><i class="fa fa-shop me-2"></i> Data Outlet</a>
+        <a href="{{ route('paket.index') }}"><i class="fa fa-box me-2"></i> Data Paket</a>
+    @endif
 
     <div class="menu-title-main">LAINNYA</div>
-    <a href="{{ route('laporan.index') }}"><i class="fa fa-file-invoice me-2"></i> Laporan</a>
+    <a href="{{ route('laporan.index') }}"><i class="fa fa-file me-2"></i> Laporan</a>
 </div>
 
 <div class="main">
@@ -256,8 +277,8 @@
 
             <div class="d-flex gap-2">
                 <div class="search-box position-relative">
-                    <i class="fa fa-search position-absolute" style="left:12px; top:13px; color:#3b82f6;"></i>
-                    <input type="text" id="searchInput" class="form-control" placeholder="Cari Nama Pelanggan...">
+                    <i class="fa fa-search position-absolute" style="left:12px; top:13px; color: #3b82f6;"></i>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Cari Pelanggan...">
                 </div>
                 <button class="btn-add" 
                         data-bs-toggle="modal" 

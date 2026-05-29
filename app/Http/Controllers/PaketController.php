@@ -9,9 +9,22 @@ use Illuminate\Http\Request;
 
 class PaketController extends Controller
 {
-    public function index()
-    {
-       $idOutlet = auth()->user()->id_outlet;
+  public function index()
+{
+    $idOutlet = auth()->user()->id_outlet;
+
+    // ADMIN PUSAT
+    if (auth()->user()->role == 'admin') {
+
+        $pakets = Paket::with('outlet')->get();
+
+        $outlets = Outlet::all();
+
+        $users = User::all();
+
+    } 
+    // ADMIN CABANG
+    else {
 
         $pakets = Paket::with('outlet')
             ->where('id_outlet', $idOutlet)
@@ -20,21 +33,22 @@ class PaketController extends Controller
         $outlets = Outlet::where('id', $idOutlet)->get();
 
         $users = User::where('id_outlet', $idOutlet)->get();
-
-        // 4. Kirim variabel $outlets ke view paket
-        return view('paket.index', compact('pakets', 'outlets', 'users'));
     }
+
+    return view('paket.index', compact('pakets', 'outlets', 'users'));
+}
     public function store(Request $request)
-    {
-        $request->validate([
-            'jenis' =>'required',
-            'nm_paket' => 'required',
-            'harga' => 'required',
-        ]);
+{
+    $request->validate([
+        'id_outlet' => 'required',
+        'jenis' => 'required',
+        'nm_paket' => 'required',
+        'harga' => 'required',
+    ]);
 
-         Paket::create([
+    Paket::create([
 
-        'id_outlet' => auth()->user()->id_outlet,
+        'id_outlet' => $request->id_outlet,
 
         'jenis' => $request->jenis,
 
@@ -42,11 +56,10 @@ class PaketController extends Controller
 
         'harga' => $request->harga,
 
-        ]);
+    ]);
 
-        return redirect()->back()->with('success', 'Paket berhasil ditambahkan!');
-    }
-
+    return redirect()->back()->with('success', 'Paket berhasil ditambahkan!');
+}
     public function update(Request $request, $id)
     {
         $paket = Paket::findOrFail($id);

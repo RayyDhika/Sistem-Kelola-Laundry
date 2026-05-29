@@ -10,17 +10,22 @@ class LaporanController extends Controller
 {
     public function index(Request $request)
     {
-        // Tangkap input filter rentang tanggal dari form
         $tanggal_awal = $request->input('tanggal_awal');
         $tanggal_akhir = $request->input('tanggal_akhir');
 
-        // Query dasar mengambil data transaksi beserta relasi pelanggan dan paket
+        // ambil outlet user login
+        $idOutlet = auth()->user()->id_outlet;
+
+        // query dasar
         $query = Transaksi::with(['pelanggan', 'details.paket']);
 
-        // default kosong
+        // kalau bukan outlet pusat
+        if (auth()->user()->role != 'admin') {
+            $query->where('id_outlet', $idOutlet);
+        }
+
         $transaksi = collect();
 
-        // Data transaksi hanya akan difilter jika user sudah memilih tanggal
         if ($tanggal_awal && $tanggal_akhir) {
 
             $transaksi = $query
@@ -28,8 +33,11 @@ class LaporanController extends Controller
                 ->get();
         }
 
-        // Kirim data ke view laporan
-        return view('laporan.index', compact('transaksi', 'tanggal_awal', 'tanggal_akhir'));
+        return view('laporan.index', compact(
+            'transaksi',
+            'tanggal_awal',
+            'tanggal_akhir'
+        ));
     }
 
 
@@ -37,13 +45,76 @@ class LaporanController extends Controller
     {
         $idOutlet = auth()->user()->id_outlet;
 
-        $laporans = Transaksi::with('pelanggan')
-            ->where('id_outlet', $idOutlet)
-            ->latest()
-            ->get();
+        $query = Transaksi::with('pelanggan');
+
+        if (auth()->user()->role != 'admin') {
+            $query->where('id_outlet', $idOutlet);
+        }
+
+        $laporans = $query->latest()->get();
 
         $pdf = Pdf::loadView('laporan.pdf', compact('laporans'));
 
         return $pdf->download('laporan-laundry.pdf');
+    }
+
+
+    public function kasirIndex(Request $request)
+    {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+
+        $idOutlet = auth()->user()->id_outlet;
+
+        $query = Transaksi::with(['pelanggan', 'details.paket']);
+
+        if (auth()->user()->role != 'admin') {
+            $query->where('id_outlet', $idOutlet);
+        }
+
+        $transaksi = [];
+
+        if ($tanggal_awal && $tanggal_akhir) {
+
+            $transaksi = $query
+                ->whereBetween('tgl_masuk', [$tanggal_awal, $tanggal_akhir])
+                ->get();
+        }
+
+        return view('laporan.index', compact(
+            'transaksi',
+            'tanggal_awal',
+            'tanggal_akhir'
+        ));
+    }
+
+
+    public function ownerIndex(Request $request)
+    {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+
+        $idOutlet = auth()->user()->id_outlet;
+
+        $query = Transaksi::with(['pelanggan', 'details.paket']);
+
+        if (auth()->user()->role != 'admin') {
+            $query->where('id_outlet', $idOutlet);
+        }
+
+        $transaksi = [];
+
+        if ($tanggal_awal && $tanggal_akhir) {
+
+            $transaksi = $query
+                ->whereBetween('tgl_masuk', [$tanggal_awal, $tanggal_akhir])
+                ->get();
+        }
+
+        return view('laporan.index', compact(
+            'transaksi',
+            'tanggal_awal',
+            'tanggal_akhir'
+        ));
     }
 }

@@ -318,12 +318,12 @@
              <!-- INFO -->
             <div class="border rounded-4 p-3 mt-3">
 
-                <p class="mb-2 text-primary fw-bold">
+                <p class="mb-2 text-primary" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-user me-2"></i>
                     Role: Admin
                 </p>
 
-                <p class="mb-0 fw-bold text-success">
+                <p class="mb-0 text-success" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-circle me-2"></i>
                     Status: Aktif
                 </p>
@@ -444,13 +444,18 @@
                 DATA OUTLET
             </h4>
 
-            <button class="btn-add"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalTambah">
-            
-                <i class="fa fa-plus me-2"></i> 
-                TAMBAH OUTLET
-            </button>
+            @if(auth()->user()->role == 'admin')
+
+<button class="btn-add"
+        data-bs-toggle="modal"
+        data-bs-target="#modalTambah">
+
+    <i class="fa fa-plus me-2"></i>
+    TAMBAH OUTLET
+
+</button>
+
+@endif
 
         </div>
 
@@ -488,40 +493,61 @@
                             {{ $o->no_telp }}
                         </td>
 
-                        <td>
+       <td>
 
-                            <div class="d-flex justify-content-center gap-2">
+    <div class="d-flex justify-content-center gap-2">
 
-                                <button class="btn btn-sm btn-primary text-white"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalEdit{{ $o->id }}">
+        {{-- ADMIN PUSAT --}}
+        @if(auth()->user()->role == 'admin')
 
+            {{-- EDIT --}}
+            <button class="btn btn-sm btn-primary text-white"
+                data-bs-toggle="modal"
+                data-bs-target="#modalEdit{{ $o->id }}">
 
-                                    <i class="fa fa-edit"></i>
+                <i class="fa fa-edit"></i>
 
-                                </button>
+            </button>
 
-                                <button class="btn btn-sm btn-danger"
-                                    onclick="konfirmasiHapus({{ $o->id }})">
+            {{-- HAPUS --}}
+            @if($o->id != 5)
 
-                                    <i class="fa fa-trash"></i>
+            <button class="btn btn-sm btn-danger"
+                onclick="konfirmasiHapus({{ $o->id }})">
 
-                                </button>
+                <i class="fa fa-trash"></i>
 
-                                <form id="form-hapus-{{ $o->id }}"
-                                    action="{{ route('outlet.destroy', $o->id) }}"
-                                    method="POST"
-                                    style="display:none;">
+            </button>
 
-                                    @csrf
-                                    @method('DELETE')
+            @endif
 
-                                </form>
+            <form id="form-hapus-{{ $o->id }}"
+                action="{{ route('outlet.destroy', $o->id) }}"
+                method="POST"
+                style="display:none;">
 
-                            </div>
+                @csrf
+                @method('DELETE')
 
-                        </td>
+            </form>
 
+        {{-- ADMIN CABANG --}}
+        @elseif(auth()->user()->id_outlet == $o->id)
+
+            {{-- CUMA BISA EDIT OUTLET SENDIRI --}}
+            <button class="btn btn-sm btn-primary text-white"
+                data-bs-toggle="modal"
+                data-bs-target="#modalEdit{{ $o->id }}">
+
+                <i class="fa fa-edit"></i>
+
+            </button>
+
+        @endif
+
+    </div>
+
+</td>
                     </tr>
 
                     @endforeach

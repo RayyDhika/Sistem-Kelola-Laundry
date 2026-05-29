@@ -366,12 +366,12 @@
              <!-- INFO -->
             <div class="border rounded-4 p-3 mt-3">
 
-                <p class="mb-2 text-primary fw-bold">
+                <p class="mb-2 text-primary">
                     <i class="fa fa-user me-2"></i>
                     Role: Admin
                 </p>
 
-                <p class="mb-0 fw-bold text-success">
+                <p class="mb-0 text-success">
                     <i class="fa fa-circle me-2"></i>
                     Status: Aktif
                 </p>
@@ -439,7 +439,7 @@
     <div class="menu-title-main">LAINNYA</div>
 
     <a href="{{ route('laporan.index') }}">
-        <i class="fa fa-file-invoice me-2"></i> Laporan
+        <i class="fa fa-file me-2"></i> Laporan
     </a>
 
 </div>
@@ -519,6 +519,24 @@
                 DATA PENGGUNA
             </h4>
 
+             <div class="d-flex align-items-center gap-3">
+
+        <!-- SEARCH -->
+        <div class="search-box position-relative">
+
+            <i class="fa fa-search position-absolute"
+               style="left:12px; top:13px; color:#3b82f6;"></i>
+
+            <input type="text"
+                   id="searchUser"
+                   class="form-control"
+                   placeholder="Cari Pengguna..."
+                   style="padding-left:35px; width:260px; height:43px; font-size:16px; border:1.3px solid #3577f3;
+                        border-radius:10px;
+                        box-shadow:none;">
+
+        </div>
+
             <button class="btn-add"
                     data-bs-toggle="modal"
                     data-bs-target="#modalTambahUser">
@@ -527,13 +545,13 @@
                 TAMBAH PENGGUNA
 
             </button>
-
+            </div>
         </div>
 
         <!-- TABLE -->
         <div class="table-responsive">
 
-            <table class="table align-middle table-user-custom">
+            <table class="table align-middle table-user-custom" id="userTable">
 
                 <thead>
 
@@ -827,33 +845,48 @@
                     </div>
 
                     <!-- OUTLET -->
-                <div class="col-md-6 mb-3">
+<div class="col-md-6 mb-3">
 
-                    <label class="form-label">
-                        Outlet
-                    </label>
+    <label class="form-label">
+        Outlet
+    </label>
 
-                    <select name="id_outlet"
-                            class="form-select"
-                            required>
+    @if(auth()->user()->role == 'admin')
 
-                        <option value="">
-                            Pilih Outlet
-                        </option>
+        {{-- ADMIN PUSAT BISA PILIH SEMUA OUTLET --}}
+        <select name="id_outlet"
+                class="form-select"
+                required>
 
-                        @foreach($outlets as $outlet)
+            <option value="">
+                Pilih Outlet
+            </option>
 
-                        <option value="{{ $outlet->id }}">
+            @foreach($outlets as $outlet)
 
-                            {{ $outlet->nm_outlet }}
+            <option value="{{ $outlet->id }}">
+                {{ $outlet->nm_outlet }}
+            </option>
 
-                        </option>
+            @endforeach
 
-                        @endforeach
+        </select>
 
-                    </select>
+    @else
 
-                </div>
+        {{-- ADMIN CABANG OTOMATIS OUTLET SENDIRI --}}
+        <input type="hidden"
+               name="id_outlet"
+               value="{{ auth()->user()->id_outlet }}">
+
+        <input type="text"
+               class="form-control"
+               value="{{ auth()->user()->outlet->nm_outlet }}"
+               readonly>
+
+    @endif
+
+</div>
                     <!-- ROLE -->
                     <div class="col-md-6 mb-3">
 
@@ -864,9 +897,6 @@
                         <select name="role"
                                 class="form-select">
 
-                            <option value="admin">
-                                Admin
-                            </option>
 
                             <option value="kasir">
                                 Kasir
@@ -1106,5 +1136,34 @@ telepon.addEventListener('input', function(e){
 
 </script>
 
+
+<!-- search bar --> 
+<script>
+
+document.getElementById('searchUser').addEventListener('keyup', function(){
+
+    let keyword = this.value.toLowerCase();
+
+    let rows = document.querySelectorAll('#userTable tbody tr');
+
+    rows.forEach(function(row){
+
+        let text = row.innerText.toLowerCase();
+
+        if(text.includes(keyword)){
+
+            row.style.display = '';
+
+        }else{
+
+            row.style.display = 'none';
+
+        }
+
+    });
+
+});
+
+</script>
 </body>
 </html>

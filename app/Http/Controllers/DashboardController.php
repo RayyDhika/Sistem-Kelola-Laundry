@@ -7,7 +7,23 @@ use App\Models\Transaksi;
 class DashboardController extends Controller
 {
     public function index()
-    {
+{
+    if(auth()->user()->role == 'admin'){
+
+        $countTransaksi = Transaksi::count();
+
+        $countProses = Transaksi::where(
+            'status',
+            'proses'
+        )->count();
+
+        $countSelesai = Transaksi::where(
+            'status',
+            'selesai'
+        )->count();
+
+    } else {
+
         $idOutlet = auth()->user()->id_outlet;
 
         $countTransaksi = Transaksi::where(
@@ -28,11 +44,12 @@ class DashboardController extends Controller
         )
         ->where('status', 'selesai')
         ->count();
-
-        return view('admin.dashboard', compact(
-            'countTransaksi',
-            'countProses',
-            'countSelesai'
-        ));
     }
+
+    return view('admin.dashboard', compact(
+        'countTransaksi',
+        'countProses',
+        'countSelesai'
+    ));
+}
 }

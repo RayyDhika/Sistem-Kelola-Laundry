@@ -12,7 +12,19 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::all();
+        //superadmin /admin pust
+        if(auth()->user()->role == 'admin'){
+            $users = User::all();
+         }else{
+
+        // ADMIN CABANG
+            $users = User::where(
+                'id_outlet',
+                auth()->user()->id_outlet
+            )->get();
+
+        }
+
         $outlets = Outlet::all();
         $pakets = Paket::all();
 
@@ -34,7 +46,9 @@ class UserController extends Controller
             'email' => $request->email,
             'telepon' => $request->telepon,
             'jk' => $request->jk,
-            'id_outlet' => $request->id_outlet,
+            'id_outlet' => auth()->user()->role == 'admin'
+                ? $request->id_outlet
+                : auth()->user()->id_outlet,
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
@@ -56,7 +70,9 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->telepon = $request->telepon;
         $user->jk = $request->jk;
-        $user->id_outlet = $request->id_outlet;
+        if(auth()->user()->role == 'admin'){
+             $user->id_outlet = $request->id_outlet;
+        }
         $user->role = $request->role;
 
         if ($request->filled('password')) {

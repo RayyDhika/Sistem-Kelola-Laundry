@@ -177,12 +177,12 @@
              <!-- INFO -->
             <div class="border rounded-4 p-3 mt-3">
 
-                <p class="mb-2 text-primary fw-bold">
+                <p class="mb-2 text-primary" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-user me-2"></i>
-                    Role: Admin
+                    Role: {{ ucfirst(auth()->user()->role) }}
                 </p>
 
-                <p class="mb-0 fw-bold text-success">
+                <p class="mb-0 text-success" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-circle me-2"></i>
                     Status: Aktif
                 </p>
@@ -215,24 +215,114 @@
 </div>
 
 <div class="sidebar text-white">
-    <div class="menu-title-main">MENU UTAMA</div>
-    <a href="{{ route('dashboard') }}"><i class="fa fa-home me-2"></i> Beranda</a>
-    <div class="menu-title-main">TRANSAKSI</div>
-    <a href="{{ route('pelanggan.index') }}"><i class="fa fa-user-plus me-2"></i> Register Pelanggan</a>
-    <a href="{{ route('transaksi.index') }}"><i class="fa fa-cart-plus me-2"></i> Entri Transaksi</a>
-    <div class="menu-title-main">DATA</div>
-    <a href="{{ route('user.index') }}"><i class="fa fa-user me-2"></i> Data Pengguna</a>
-    <a href="{{ route('outlet.index') }}"><i class="fa fa-shop me-2"></i> Data Outlet</a>
-    <a href="{{ route('paket.index') }}"><i class="fa fa-box me-2"></i> Data Paket</a>
-    <div class="menu-title-main">LAINNYA</div>
-    <a href="{{ route('laporan.index') }}" class="active-menu"><i class="fa fa-file-invoice me-2"></i> Laporan</a>
-</div>
 
+    <div class="menu-title-main">MENU UTAMA</div>
+
+    @if(auth()->user()->role == 'kasir')
+
+        <a href="{{ route('kasir.dashboard') }}">
+            <i class="fa fa-home me-2"></i> Beranda
+        </a>
+
+    @elseif(auth()->user()->role == 'owner')
+
+        <a href="{{ route('owner.dashboard') }}" class="active-menu">
+            <i class="fa fa-file me-2"></i> Laporan
+        </a>
+
+    @else
+
+        <a href="{{ route('dashboard') }}">
+            <i class="fa fa-home me-2"></i> Beranda
+        </a>
+
+    @endif
+
+
+    {{-- KHUSUS ADMIN & KASIR --}}
+    @if(auth()->user()->role != 'owner')
+
+        <div class="menu-title-main">TRANSAKSI</div>
+
+        @if(auth()->user()->role == 'kasir')
+
+            <a href="{{ route('kasir.pelanggan') }}">
+                <i class="fa fa-user-plus me-2"></i> Register Pelanggan
+            </a>
+
+            <a href="{{ route('kasir.transaksi') }}">
+                <i class="fa fa-cart-plus me-2"></i> Entri Transaksi
+            </a>
+
+        @else
+
+            <a href="{{ route('pelanggan.index') }}">
+                <i class="fa fa-user-plus me-2"></i> Register Pelanggan
+            </a>
+
+            <a href="{{ route('transaksi.index') }}">
+                <i class="fa fa-cart-plus me-2"></i> Entri Transaksi
+            </a>
+
+        @endif
+
+    @endif
+
+
+    {{-- KHUSUS ADMIN --}}
+    @if(auth()->user()->role == 'admin')
+
+        <div class="menu-title-main">DATA</div>
+
+        <a href="{{ route('user.index') }}">
+            <i class="fa fa-user me-2"></i> Data Pengguna
+        </a>
+
+        <a href="{{ route('outlet.index') }}">
+            <i class="fa fa-shop me-2"></i> Data Outlet
+        </a>
+
+        <a href="{{ route('paket.index') }}">
+            <i class="fa fa-box me-2"></i> Data Paket
+        </a>
+
+    @endif
+
+
+    @if(auth()->user()->role != 'owner')
+
+<div class="menu-title-main">LAINNYA</div>
+
+    @if(auth()->user()->role == 'kasir')
+
+        <a href="{{ route('kasir.laporan') }}" class="active-menu">
+            <i class="fa fa-file me-2"></i> Laporan
+        </a>
+
+    @else
+
+        <a href="{{ route('laporan.index') }}" class="active-menu">
+            <i class="fa fa-file me-2"></i> Laporan
+        </a>
+
+    @endif
+
+@endif
+
+</div>
 <div class="main">
     <p class="text-primary fw-bold mb-3" style="font-size: 16px;">Silahkan Untuk Melengkapi Terlebih Dahulu Untuk Lanjut</p>
     
     <div class="card-filter mb-4">
-        <form action="{{ route('laporan.index') }}" method="GET">
+        <form action="
+        @if(auth()->user()->role == 'kasir')
+            {{ route('kasir.laporan') }}
+        @elseif(auth()->user()->role == 'owner')
+            {{ route('owner.dashboard') }}
+        @else
+            {{ route('laporan.index') }}
+        @endif   
+            " method="GET">
             <div class="row align-items-end g-3">
                 
                 <div class="col-md-4">
@@ -269,18 +359,38 @@
 
         <div class="d-flex align-items-center gap-2"></div>
 
-            @if($tanggal_awal && $tanggal_akhir)
+            @if(isset($tanggal_awal) && isset($tanggal_akhir) && $tanggal_awal && $tanggal_akhir)
                 <span class="badge bg-primary px-3 py-2">
                     Periode: 
                     {{ \Carbon\Carbon::parse($tanggal_awal)->format('d/m/Y') }} s/d
                     {{ \Carbon\Carbon::parse($tanggal_akhir)->format('d/m/Y') }}
                 </span>
 
-            <a href="{{ route('laporan.cetak', [
+            @if(auth()->user()->role == 'kasir')
+
+            <a href="{{ route('kasir.laporan.cetak', [
                     'tanggal_awal' => $tanggal_awal,
                     'tanggal_akhir' => $tanggal_akhir
                 ]) }}"
                class="btn btn-danger">
+
+            @elseif(auth()->user()->role == 'owner')
+
+            <a href="{{ route('owner.laporan.cetak', [
+                    'tanggal_awal' => $tanggal_awal,
+                    'tanggal_akhir' => $tanggal_akhir
+            ]) }}"
+            class="btn btn-danger">
+
+            @else
+
+            <a href="{{ route('laporan.cetak', [
+                    'tanggal_awal' => $tanggal_awal,
+                    'tanggal_akhir' => $tanggal_akhir
+            ]) }}"
+            class="btn btn-danger">
+
+            @endif
 
                 <i class="fa fa-file-pdf"></i>
                 Cetak PDF
@@ -305,7 +415,7 @@
                 </thead>
               <tbody>
 
-@if($tanggal_awal && $tanggal_akhir)
+@if(isset($tanggal_awal) && isset($tanggal_akhir) && $tanggal_awal && $tanggal_akhir)
 
     @forelse($transaksi as $key => $t)
 
@@ -411,7 +521,7 @@
 
         Swal.fire({
             title: 'Yakin ingin logout?',
-            text: 'Anda akan keluar dari halaman admin',
+            text: 'Anda akan keluar dari halaman {{ auth()->user()->role }}',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#0d6efd',

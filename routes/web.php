@@ -82,3 +82,51 @@ Route::middleware('auth')->group(function () {
     })->name('logout');
     
 });
+
+Route::middleware('auth')->group(function(){
+
+    Route::get('/kasir', function () {
+        return view('kasir.dashboard');
+    })->name('kasir.dashboard');
+
+});
+
+Route::middleware(['auth'])->group(function(){
+
+    // =========================
+    // KASIR
+    // =========================
+    Route::get('/kasir', function () {
+        return view('kasir.dashboard');
+    })->name('kasir.dashboard');
+
+    Route::get('/kasir/pelanggan',
+        [PelangganController::class, 'index'])
+        ->name('kasir.pelanggan');
+
+    Route::get('/kasir/transaksi',
+        [TransaksiController::class, 'index'])
+        ->name('kasir.transaksi');
+
+    Route::get('/kasir/laporan',
+        [LaporanController::class, 'index'])
+        ->name('kasir.laporan');
+
+    Route::get('/kasir/laporan/cetak',
+        [LaporanController::class, 'cetak'])
+        ->name('kasir.laporan.cetak');
+
+
+    // =========================
+    // OWNER
+    // =========================
+    Route::get('/owner',
+        [LaporanController::class, 'index'])
+        ->name('owner.dashboard');
+
+    Route::get('/owner/laporan/cetak',
+        [LaporanController::class, 'cetak'])
+        ->name('owner.laporan.cetak');
+
+});
+

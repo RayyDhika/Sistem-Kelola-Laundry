@@ -408,12 +408,12 @@
              <!-- INFO -->
             <div class="border rounded-4 p-3 mt-3">
 
-                <p class="mb-2 text-primary fw-bold">
+                <p class="mb-2 text-primary" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-user me-2"></i>
-                    Role: Admin
+                    Role: {{ ucfirst(auth()->user()->role) }}
                 </p>
 
-                <p class="mb-0 fw-bold text-success">
+                <p class="mb-0 text-success" style="font-family: Arial, Helvetica, sans-serif">
                     <i class="fa fa-circle me-2"></i>
                     Status: Aktif
                 </p>
@@ -450,21 +450,46 @@
 
     <div class="menu-title-main">MENU UTAMA</div>
 
-    <a href="{{ route('dashboard') }}">
-        <i class="fa fa-home me-2"></i> Beranda
-    </a>
+    @if(auth()->user()->role == 'admin')
+
+        <a href="{{ route('dashboard') }}">
+            <i class="fa fa-home me-2"></i> Beranda
+        </a>
+
+    @else
+
+        <a href="{{ route('kasir.dashboard') }}">
+            <i class="fa fa-home me-2"></i> Beranda
+        </a>
+
+    @endif
 
     <div class="menu-title-main">TRANSAKSI</div>
 
-    <a href="{{ route('pelanggan.index') }}">
-        <i class="fa fa-user-plus me-2"></i> Register Pelanggan
-    </a>
+    @if(auth()->user()->role == 'admin')
 
-    <a href="{{ route('transaksi.index') }}" class="active-menu">
-        <i class="fa fa-cart-plus me-2"></i> Entri Transaksi
-    </a>
+        <a href="{{ route('pelanggan.index') }}">
+            <i class="fa fa-user-plus me-2"></i> Register Pelanggan
+        </a>
 
-     <!-- DATA -->
+        <a href="{{ route('transaksi.index') }}" class="active-menu">
+            <i class="fa fa-cart-plus me-2"></i> Entri Transaksi
+        </a>
+
+    @else
+
+        <a href="{{ route('kasir.pelanggan') }}">
+            <i class="fa fa-user-plus me-2"></i> Register Pelanggan
+        </a>
+
+        <a href="{{ route('kasir.transaksi') }}" class="active-menu">
+            <i class="fa fa-cart-plus me-2"></i> Entri Transaksi
+        </a>
+
+    @endif
+
+    @if(auth()->user()->role == 'admin')
+
     <div class="menu-title-main">DATA</div>
 
     <a href="{{ route('user.index') }}">
@@ -479,13 +504,23 @@
         <i class="fa fa-box me-2"></i> Data Paket
     </a>
 
-    <!-- LAINNYA -->
+    @endif
+
     <div class="menu-title-main">LAINNYA</div>
 
-    <a href="{{ route('laporan.index') }}">
-        <i class="fa fa-file-alt me-2"></i> Laporan
-    </a>
+    @if(auth()->user()->role == 'admin')
 
+        <a href="{{ route('laporan.index') }}">
+            <i class="fa fa-file me-2"></i> Laporan
+        </a>
+
+    @else
+
+        <a href="{{ route('kasir.laporan') }}">
+            <i class="fa fa-file me-2"></i> Laporan
+        </a>
+
+    @endif
 
 </div>
 
@@ -503,14 +538,14 @@
 
         <div class="col-md-4">
             <div class="card-stat" style="background: #3577f3;">
-                <h6 style="font-size:13px;">JUMLAH PROSES PESANAN</h6>
+                <h6 style="font-size:13px;">JUMLAH PESANAN DALAM PROSES</h6>
                 <h2 style="font-size:28px;">{{ $countProses }}</h2>
             </div>
         </div>
 
         <div class="col-md-4">
             <div class="card-stat" style="background: #1a4fbf;">
-                <h6 style="font-size:13px;">JUMLAH SELESAI</h6>
+                <h6 style="font-size:13px;">JUMLAH PESANAN SELESAI</h6>
                 <h2 style="font-size:28px;">{{ $countSelesai }}</h2>
             </div>
         </div>
@@ -537,7 +572,12 @@
                        id="searchTransaksi"
                        class="form-control"
                        placeholder="Cari Pelanggan..."
-                       style="padding-left:35px; width:260px; height: 43px; font-size:16px;">
+                       style="padding-left:35px;
+                            width:260px;
+                            height:43px;
+                            font-size:16px;
+                            border:1.3px solid #3577f3;
+                            border-radius:12px;">
                 </div>
 
     <!--button-->

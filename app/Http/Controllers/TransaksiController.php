@@ -159,11 +159,8 @@ class TransaksiController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'id_pelanggan' => 'required',
-            'kode_invoice' => 'required',
             'status' => 'required',
             'status_bayar' => 'required',
-            'batas_waktu' => 'required|date',
         ]);
 
         $transaksi = Transaksi::findOrFail($id);

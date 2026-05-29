@@ -15,7 +15,19 @@ class OutletController extends Controller
     public function index()
     {
         // Mengambil semua data dari tabel outlet
+      // ambil id outlet user login
+    $idOutlet = auth()->user()->id_outlet;
+
+    // ADMIN PUSAT
+    if (auth()->user()->role == 'admin') {
+
         $outlets = Outlet::all();
+
+    } else {
+
+        // ADMIN CABANG -> cuma outlet sendiri
+        $outlets = Outlet::where('id', $idOutlet)->get();
+    }
 
         $users = User::all();
 

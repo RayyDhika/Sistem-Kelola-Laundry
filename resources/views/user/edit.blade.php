@@ -174,11 +174,6 @@
                             <select name="role"
                                     class="form-select">
 
-                                <option value="admin"
-                                    {{ $u->role == 'admin' ? 'selected' : '' }}>
-                                    Admin
-                                </option>
-
                                 <option value="kasir"
                                     {{ $u->role == 'kasir' ? 'selected' : '' }}>
                                     Kasir

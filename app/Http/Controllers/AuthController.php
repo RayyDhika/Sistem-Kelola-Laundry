@@ -36,9 +36,28 @@ class AuthController extends Controller
         }
 
         // kalau berhasil login
-        return redirect('/dashboard')->with('success', 'Login berhasil!');
-    }
+        // kalau berhasil login
+        if(auth()->user()->role == 'admin'){
 
+            return redirect('/dashboard')
+                ->with('success', 'Login berhasil!');
+
+        }
+
+        if(auth()->user()->role == 'kasir'){
+
+            return redirect('/kasir')
+                ->with('success', 'Login berhasil!');
+
+        }
+
+        if(auth()->user()->role == 'owner'){
+
+            return redirect('/owner')
+                ->with('success', 'Login berhasil!');
+
+        }       
+    }
     // LOGOUT
     public function logout()
     {
