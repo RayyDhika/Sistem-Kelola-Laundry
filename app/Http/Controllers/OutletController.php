@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Outlet; 
+use App\Models\Outlet;
 use App\Models\User;
 use App\Models\Paket;
 use Illuminate\Http\Request;
@@ -15,24 +15,24 @@ class OutletController extends Controller
     public function index()
     {
         // Mengambil semua data dari tabel outlet
-      // ambil id outlet user login
-    $idOutlet = auth()->user()->id_outlet;
+        // ambil id outlet user login
+        $idOutlet = auth()->user()->id_outlet;
 
-    // ADMIN PUSAT
-    if (auth()->user()->role == 'admin') {
+        // ADMIN PUSAT
+        if (auth()->user()->role == 'admin') {
 
-        $outlets = Outlet::all();
+            $outlets = Outlet::all();
 
-    } else {
+        } else {
 
-        // ADMIN CABANG -> cuma outlet sendiri
-        $outlets = Outlet::where('id', $idOutlet)->get();
-    }
+            // ADMIN CABANG -> cuma outlet sendiri
+            $outlets = Outlet::where('id', $idOutlet)->get();
+        }
 
         $users = User::all();
 
         $pakets = Paket::all();
-        
+
         // Menghitung jumlah outlet untuk tampilan Stat Card
         $countOutlet = $outlets->count();
 
@@ -46,19 +46,31 @@ class OutletController extends Controller
     public function store(Request $request)
     {
         // Validasi input sesuai dengan migration project BubbleBliss
-        $request->validate([
-            'nm_outlet' => 'required|max:40',
-            'alamat'    => 'required',
-            'no_telp'   => 'required|max:20',
-            'owner'     => 'required|max:40',
-        ]);
+        $request->validate(
+    [
+        'nm_outlet' => 'required|max:40|unique:outlet,nm_outlet',
+        'alamat' => 'required',
+        'no_telp' => 'required|max:20|unique:outlet,no_telp',
+        'owner' => 'required|max:40',
+    ],
+    [
+        'nm_outlet.required' => 'Nama outlet wajib diisi.',
+        'nm_outlet.unique' => 'Nama outlet sudah digunakan.',
 
+        'alamat.required' => 'Alamat wajib diisi.',
+
+        'no_telp.required' => 'Nomor telepon wajib diisi.',
+        'no_telp.unique' => 'Nomor telepon sudah digunakan.',
+
+        'owner.required' => 'Nama owner wajib diisi.',
+    ]
+);
         // Simpan ke database
         Outlet::create([
             'nm_outlet' => $request->nm_outlet,
-            'alamat'    => $request->alamat,
-            'no_telp'   => $request->no_telp,
-            'owner'     => $request->owner,
+            'alamat' => $request->alamat,
+            'no_telp' => $request->no_telp,
+            'owner' => $request->owner,
         ]);
 
         // Kembali ke halaman index dengan pesan sukses
@@ -72,7 +84,7 @@ class OutletController extends Controller
     {
         // Mengambil data outlet berdasarkan ID, jika tidak ada akan error 404
         $outlet = Outlet::findOrFail($id);
-        
+
         // Mengarahkan ke file resources/views/outlet/edit.blade.php
         return view('outlet.edit', compact('outlet'));
     }
@@ -83,21 +95,34 @@ class OutletController extends Controller
     public function update(Request $request, $id)
     {
         // Validasi tetap diperlukan saat update
-        $request->validate([
-            'nm_outlet' => 'required|max:40',
-            'alamat'    => 'required',
-            'no_telp'   => 'required|max:20',
-            'owner'     => 'required|max:40',
-        ]);
+        $request->validate(
+    [
+        'nm_outlet' => 'required|max:40|unique:outlet,nm_outlet,' . $id,
+        'alamat' => 'required',
+        'no_telp' => 'required|max:20|unique:outlet,no_telp,' . $id,
+        'owner' => 'required|max:40',
+    ],
+    [
+        'nm_outlet.required' => 'Nama outlet wajib diisi.',
+        'nm_outlet.unique' => 'Nama outlet sudah digunakan.',
+
+        'alamat.required' => 'Alamat wajib diisi.',
+
+        'no_telp.required' => 'Nomor telepon wajib diisi.',
+        'no_telp.unique' => 'Nomor telepon sudah digunakan.',
+
+        'owner.required' => 'Nama owner wajib diisi.',
+    ]
+);
 
         $outlet = Outlet::findOrFail($id);
-        
+
         // Mengupdate data menggunakan data dari request form
         $outlet->update([
             'nm_outlet' => $request->nm_outlet,
-            'alamat'    => $request->alamat,
-            'no_telp'   => $request->no_telp,
-            'owner'     => $request->owner,
+            'alamat' => $request->alamat,
+            'no_telp' => $request->no_telp,
+            'owner' => $request->owner,
         ]);
 
         return redirect()->route('outlet.index')->with('success', 'Data Outlet berhasil diperbarui!');

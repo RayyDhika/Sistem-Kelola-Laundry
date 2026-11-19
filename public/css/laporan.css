@@ -1,0 +1,124 @@
+ body {
+            background: #e5f0ff;
+            margin: 0;
+            font-family: 'Hammersmith One', sans-serif;
+            color: #0650d1;
+        }
+
+        .topbar {
+            display: flex;
+            position: sticky;
+            top: 0;
+            z-index: 1060;
+        }
+
+        .logo-header {
+            width: 240px;
+            height: 70px;
+            background: #1a4fbf !important;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+        }
+
+        .header-right {
+            flex: 1;
+            height: 70px;
+            background: white;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 3px 5px -1px rgba(53, 119, 243);
+        }
+
+
+        .menu-title-main {
+            font-size: 14px;
+            margin: 15px 5px 5px;
+            opacity: 0.8;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .main {
+            margin-left: 240px;
+            padding: 25px;
+        }
+
+        .card-filter {
+            border: 2px solid #3577f3;
+            border-radius: 15px;
+            background: white;
+            padding: 25px;
+        }
+
+        .form-label-blue {
+            color: #0650d1;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .btn-tampilkan {
+            background: #3577f3;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            font-weight: bold;
+            border-radius: 8px;
+            width: 100%;
+            height: 43px;
+            transition: 0.2s;
+        }
+
+        .btn-tampilkan:hover {
+            background: #1a4fbf;
+            color: white;
+        }
+
+        .table-custom thead th {
+            background: #b9d5f7;
+            color: #0050d7;
+            padding: 16px;
+            border: none;
+            text-align: center;
+            font-size: 16px;
+            font-family: 'Hammersmith One', sans-serif;
+        }
+
+        .table-custom tbody td {
+            vertical-align: middle;
+            text-align: center;
+            padding: 14px;
+            font-family: Arial, Helvetica, sans-serif !important;
+            font-weight: normal !important;
+            color: #0650d1;
+
+        }
+
+        .card-table {
+            border: none;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 4px 15px rgba(53, 119, 243, 0.15);
+            padding: 25px;
+        }
+
+        .card-stat {
+            border-radius: 15px;
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 4px 15px rgba(53, 119, 243, 0.15);
+        }
+
+        .card-stat h6 {
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .card-stat h2 {
+            font-size: 28px;
+            margin: 0;
+        }

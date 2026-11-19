@@ -1,0 +1,192 @@
+body {
+            background: #e5f0ff;
+            margin: 0;
+            font-family: 'Hammersmith One', sans-serif;
+            color: #0650d1;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            display: flex;
+            position: sticky;
+            top: 0;
+            z-index: 1060;
+        }
+
+        .logo-header {
+            width: 240px;
+            height: 70px;
+            background: #1a4fbf !important;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+        }
+
+        .header-right {
+            flex: 1;
+            height: 70px;
+            background: white;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 3px 5px -1px rgb(53, 119, 243);
+        }
+
+
+        .main {
+            margin-left: 240px;
+            padding: 25px;
+        }
+
+        /* STAT CARD */
+        .stat-card {
+            border-radius: 12px;
+            padding: 10px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            font-family: 'Hammersmith One', sans-serif;
+
+        }
+
+        .bg-blue-1 {
+            background: #6da8ff;
+        }
+
+        .bg-blue-2 {
+            background: #3577f3;
+        }
+
+        .bg-blue-3 {
+            background: #1a4fbf;
+        }
+
+        /* TABLE */
+        .card-custom {
+            border: 2px solid #c7d7ff;
+            border-radius: 14px;
+            background: white;
+            box-shadow: 0 3px 10px rgba(53, 119, 243, 0.15);
+            overflow: hidden;
+        }
+
+        .table-custom {
+            margin-bottom: 0;
+        }
+
+        .table-custom thead th {
+            background: #b9d5f7;
+            color: #0050d7;
+            padding: 16px;
+            border: none;
+            text-align: center;
+            font-size: 16px;
+            font-family: 'Hammersmith One', sans-serif;
+        }
+
+        .table-custom tbody td {
+            vertical-align: middle;
+            text-align: center;
+            padding: 14px;
+            font-family: Arial, Helvetica, sans-serif !important;
+            font-weight: normal !important;
+            color: #0650d1;
+
+        }
+
+        .table-responsive {
+            padding: 0 18px;
+        }
+
+
+        .table-custom thead th.text-start,
+        .table-custom tbody td.text-start {
+            text-align: left !important;
+
+        }
+
+        .btn-add {
+            background: linear-gradient(to right, #4f7dff, #2357eb);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .15);
+            font-family: 'Hammersmith One', sans-serif;
+        }
+
+        .btn-add:hover {
+            opacity: .9;
+            color: white;
+        }
+
+        .table-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid #dbe7ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            color: #0050d7;
+            font-weight: bold;
+            margin: 0;
+            font-family: 'Hammersmith One', sans-serif;
+        }
+
+        /* MODAL */
+        .modal {
+            z-index: 1070 !important;
+        }
+
+        .modal-backdrop {
+            z-index: 1065 !important;
+        }
+
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            padding: 20px;
+        }
+
+        .form-label-blue {
+            color: #0650d1;
+            font-weight: normal;
+            font-size: 14px;
+        }
+
+        .form-control {
+            border: 1px solid #aec6eb;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: Arial, Helvetica, sans-serif !important;
+            font-weight: normal !important;
+            color: #0650d1;
+        }
+
+        .btn-simpan {
+            background: #1a4fbf;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 30px;
+            font-weight: bold;
+        }
+
+        .btn-batal {
+            background: #2f80ed;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 30px;
+            font-weight: bold;
+        }

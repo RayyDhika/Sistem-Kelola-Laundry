@@ -15,130 +15,146 @@ class TransaksiController extends Controller
     // INDEX
     // =========================
     public function index(Request $request)
-{
-    $idOutlet = auth()->user()->id_outlet;
-    $search = $request->search;
+    {
+        $idOutlet = auth()->user()->id_outlet;
 
-    // TRANSAKSI
-    $transaksis = Transaksi::with([
-        'pelanggan', 
-        'outlet',
-        'details.paket'
-    ])
-        ->where('id_outlet', $idOutlet)
+        if (!$idOutlet && auth()->user()->role != 'admin') {
+            abort(403, 'Outlet tidak valid');
+        }
+        $search = $request->search;
 
-        ->when($search, function ($query, $search) {
-            $query->where('kode_invoice', 'like', "%{$search}%")
-                  ->orWhereHas('pelanggan', function ($q) use ($search) {
-                      $q->where('nm_pelanggan', 'like', "%{$search}%");
-                  });
-        })
+        // TRANSAKSI
+        $query = Transaksi::with([
+            'pelanggan',
+            'outlet',
+            'details.paket'
+        ]);
 
-        ->latest()
-        ->get();
+        if (auth()->user()->role != 'admin') {
+            $query->where('id_outlet', $idOutlet);
+        }
 
-    // PELANGGAN
-    $pelanggans = Pelanggan::where(
-        'id_outlet',
-        $idOutlet
-    )->get();
+        $transaksis = $query
+            ->oldest()
+            ->get();
 
-    // PAKET
-    $pakets = Paket::where(
-        'id_outlet',
-        $idOutlet
-    )->get();
+        if (auth()->user()->role == 'admin') {
 
-    // OUTLET USER SAJA
-    $outlets = Outlet::where(
-        'id',
-        $idOutlet
-    )->get();
+            $pelanggans = Pelanggan::all();
+            $pakets = Paket::all();
+            $outlets = Outlet::all();
 
-    // COUNT
-    $countTransaksi = Transaksi::where(
-        'id_outlet',
-        $idOutlet
-    )->count();
+        } else {
 
-    $countProses = Transaksi::where(
-        'id_outlet',
-        $idOutlet
-    )
-    ->where('status', 'proses')
-    ->count();
+            $pelanggans = Pelanggan::where(
+                'id_outlet',
+                $idOutlet
+            )->get();
 
-    $countSelesai = Transaksi::where(
-        'id_outlet',
-        $idOutlet
-    )
-    ->where('status', 'selesai')
-    ->count();
+            $pakets = Paket::where(
+                'id_outlet',
+                $idOutlet
+            )->get();
 
-    return view('transaksi.index', compact(
-        'transaksis',
-        'pelanggans',
-        'outlets',
-        'pakets',
-        'countTransaksi',
-        'countProses',
-        'countSelesai'
-    ));
-}
+            $outlets = Outlet::where(
+                'id',
+                $idOutlet
+            )->get();
+
+        }
+
+        // COUNT
+        $countTransaksi = auth()->user()->role == 'admin'
+            ? Transaksi::count()
+            : Transaksi::where('id_outlet', $idOutlet)->count();
+
+        $countProses = auth()->user()->role == 'admin'
+            ? Transaksi::where('status', 'proses')->count()
+            : Transaksi::where('id_outlet', $idOutlet)
+                ->where('status', 'proses')
+                ->count();
+
+        $countSelesai = auth()->user()->role == 'admin'
+            ? Transaksi::where('status', 'selesai')->count()
+            : Transaksi::where('id_outlet', $idOutlet)
+                ->where('status', 'selesai')
+                ->count();
+        return view('transaksi.index', compact(
+            'transaksis',
+            'pelanggans',
+            'outlets',
+            'pakets',
+            'countTransaksi',
+            'countProses',
+            'countSelesai'
+        ));
+    }
 
     // =========================
     // SIMPAN TRANSAKSI
     // =========================
     public function store(Request $request)
-{
-    $request->validate([
-        'id_pelanggan' => 'required',
-        'kode_invoice' => 'required',
-        'status' => 'required',
-        'status_bayar' => 'required',
-        'items' => 'required|array'
-    ]);
+    {
+        $rules = [
+            'id_pelanggan' => 'required',
+            'status' => 'required',
+            'status_bayar' => 'required',
+            'batas_waktu' => 'required|date',
+            'id_paket' => 'required|array',
+            'qty' => 'required|array'
+        ];
 
-    // SIMPAN TRANSAKSI
-    $transaksi = Transaksi::create([
-        'id_pelanggan' => $request->id_pelanggan,
-        'id_outlet' => auth()->user()->id_outlet,
-        'id_user' => auth()->id(),
-        'kode_invoice' => $request->kode_invoice,
-        'status' => $request->status,
-        'status_bayar' => $request->status_bayar,
-        'tgl_masuk' => now(),
-        'batas_waktu' => $request->batas_waktu,
-        'tgl_bayar' => $request->status_bayar == 'dibayar'
-            ? now()
-            : null,
-        'total_harga' => $request->total_harga,
-    ]);
-
-    // SIMPAN DETAIL TRANSAKSI
-    foreach ($request->items as $item) {
-
-        $paket = Paket::find($item['id_paket']);
-
-        DetailTransaksi::create([
-            'id_transaksi' => $transaksi->id,
-            'id_paket' => $item['id_paket'],
-            'qty' => $item['qty'],
-            'subtotal' => $paket->harga * $item['qty'],
+        $request->validate($rules);
+        // SIMPAN TRANSAKSI
+        $pelanggan = Pelanggan::findOrFail($request->id_pelanggan);
+        $transaksi = Transaksi::create([
+            'id_pelanggan' => $request->id_pelanggan,
+            'id_outlet' => $pelanggan->id_outlet,
+            'id_user' => auth()->id(),
+            'kode_invoice' => $request->kode_invoice,
+            'status' => $request->status,
+            'status_bayar' => $request->status_bayar,
+            'tgl_masuk' => now(),
+            'batas_waktu' => $request->batas_waktu,
+            'tgl_bayar' => $request->status_bayar == 'dibayar'
+                ? now()
+                : null,
+            'total_harga' => $request->total_harga,
         ]);
-    }
 
-    return redirect()->route('transaksi.index')
-        ->with('success', 'Transaksi berhasil ditambahkan!');
-}
+        // SIMPAN DETAIL TRANSAKSI
+        foreach ($request->id_paket as $index => $idPaket) {
+
+            $paket = Paket::find($idPaket);
+
+            DetailTransaksi::create([
+                'id_transaksi' => $transaksi->id,
+                'id_paket' => $idPaket,
+                'qty' => $request->qty[$index],
+                'subtotal' => $paket->harga * $request->qty[$index],
+            ]);
+        }
+
+        if (auth()->user()->role == 'kasir') {
+            return redirect()->route('kasir.transaksi')->with('success', 'Transaksi berhasil dtambahkan!');
+        }
+
+        return redirect()->route('transaksi.index')
+            ->with('success', 'Transaksi berhasil ditambahkan!');
+    }
 
     // =========================
     // DETAIL
     // =========================
     public function show($id)
     {
-        $transaksi = Transaksi::with(['pelanggan', 'outlet'])
-            ->findOrFail($id);
+        $query = Transaksi::with(['pelanggan', 'outlet']);
+
+        if (auth()->user()->role != 'admin') {
+            $query->where('id_outlet', auth()->user()->id_outlet);
+        }
+
+        $transaksi = $query->findOrFail($id);
 
         return response()->json($transaksi);
     }
@@ -163,7 +179,13 @@ class TransaksiController extends Controller
             'status_bayar' => 'required',
         ]);
 
-        $transaksi = Transaksi::findOrFail($id);
+        $query = Transaksi::query();
+
+        if (auth()->user()->role != 'admin') {
+            $query->where('id_outlet', auth()->user()->id_outlet);
+        }
+
+        $transaksi = $query->findOrFail($id);
 
         $transaksi->update([
             'status' => $request->status,
@@ -175,6 +197,10 @@ class TransaksiController extends Controller
                 : null,
         ]);
 
+        if (auth()->user()->role == 'kasir') {
+            return redirect()->route('kasir.transaksi')->with('success', 'Transaksi berhasil diupdate!');
+        }
+
         return redirect()->route('transaksi.index')
             ->with('success', 'Transaksi berhasil diupdate!');
     }
@@ -182,8 +208,13 @@ class TransaksiController extends Controller
     // CETAK NOTA 
     public function nota($id)
     {
-        $transaksi = Transaksi::with(['pelanggan', 'details.paket'])
-            ->findOrFail($id);
+        $query = Transaksi::with(['pelanggan', 'details.paket']);
+
+        if (auth()->user()->role != 'admin') {
+            $query->where('id_outlet', auth()->user()->id_outlet);
+        }
+
+        $transaksi = $query->findOrFail($id);
 
         return view('transaksi.nota', compact('transaksi'));
     }
@@ -193,11 +224,21 @@ class TransaksiController extends Controller
     // =========================
     // HAPUS
     // =========================
-public function destroy($id)
+    public function destroy($id)
     {
-        $transaksi = Transaksi::findOrFail($id);
+        $query = Transaksi::query();
+
+        if (auth()->user()->role != 'admin') {
+            $query->where('id_outlet', auth()->user()->id_outlet);
+        }
+
+        $transaksi = $query->findOrFail($id);
 
         $transaksi->delete();
+
+        if (auth()->user()->role == 'kasir') {
+            return redirect()->route('kasir.transaksi')->with('success', 'Transaksi berhasil dihapus!');
+        }
 
         return redirect()->route('transaksi.index')
             ->with('success', 'Transaksi berhasil dihapus!');

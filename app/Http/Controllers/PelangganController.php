@@ -4,113 +4,175 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pelanggan;
+use App\Models\Outlet;
 
 class PelangganController extends Controller
 {
     // ==========================================
     // BAGIAN 1: MENAMPILKAN DATA (READ)
     // ==========================================
-    
+
     public function index()
     {
-        $pelanggans = Pelanggan::where(
-            'id_outlet',
-            auth()->user()->id_outlet
-        )->get();
-        // Mengirim data ke view create.blade.php agar tabel terisi
-        return view('pelanggan.create', compact('pelanggans'));
+        if (
+            auth()->user()->role == 'admin' ||
+            auth()->user()->role == 'owner'
+        ) {
+
+            $pelanggans = Pelanggan::with('outlet')->get();
+
+        } else {
+
+            $pelanggans = Pelanggan::where(
+                'id_outlet',
+                auth()->user()->id_outlet
+            )->get();
+
+        }
+
+        $outlets = Outlet::all();
+
+        return view(
+            'pelanggan.create',
+            compact('pelanggans', 'outlets')
+        );
     }
 
     public function create()
     {
-        // Sama seperti index, agar saat akses /create tabel tetap muncul
-       $pelanggans = Pelanggan::where(
-            'id_outlet',
-            auth()->user()->id_outlet
+        if (
+            auth()->user()->role == 'admin' ||
+            auth()->user()->role == 'owner'
+        ) {
+
+            $pelanggans = Pelanggan::with('outlet')->get();
+
+        } else {
+
+            $pelanggans = Pelanggan::where(
+                'id_outlet',
+                auth()->user()->id_outlet
             )->get();
-        return view('pelanggan.create', compact('pelanggans'));
+
+        }
+
+        $outlets = Outlet::all();
+
+        return view(
+            'pelanggan.create',
+            compact('pelanggans', 'outlets')
+        );
     }
 
     // ==========================================
     // BAGIAN 2: SIMPAN DATA BARU (CREATE)
     // ==========================================
-    
+
     public function store(Request $request)
     {
         // Validasi input: pastikan semua kolom diisi
         $request->validate([
-            'nm_pelanggan'  => 'required',
-            'no_telp'       => 'required',
+            'nm_pelanggan' => 'required',
+            'no_telp' => 'required',
             'jenis_kelamin' => 'required',
-            'alamat'        => 'required'
+            'alamat' => 'required',
+
+            'id_outlet' => auth()->user()->role == 'admin'
+                ? 'required'
+                : 'nullable'
         ]);
 
         // Proses Insert ke Database
         // Pastikan nm_pelanggan dan no_telp sudah ada di $fillable di Model Pelanggan
-        
+
         Pelanggan::create([
-            'id_outlet' => auth()->user()->id_outlet,
-            'nm_pelanggan'  => $request->nm_pelanggan,
-            'no_telp'       => $request->no_telp,
+            'id_outlet' => (
+                auth()->user()->role == 'admin' ||
+                auth()->user()->role == 'owner'
+            )
+                ? $request->id_outlet
+                : auth()->user()->id_outlet,
+            'nm_pelanggan' => $request->nm_pelanggan,
+            'no_telp' => $request->no_telp,
             'jenis_kelamin' => $request->jenis_kelamin,
-            'alamat'        => $request->alamat,
+            'alamat' => $request->alamat,
         ]);
 
-         return redirect()->route('pelanggan.index')
-                     ->with('success', 'Data pelanggan berhasil ditambahkan!');
+        if (auth()->user()->role == 'kasir') {
+            return redirect()->route('kasir.pelanggan')->with('success', 'Data Pelanggan Berhasil di Tambahkan!');
+        }
 
-        // Kembali ke halaman sebelumnya dengan pesan sukses (SweetAlert)
-        return redirect()->route('pelanggan.create')->with('success', 'DATA PELANGGAN BERHASIL DITAMBAHKAN');
+        return redirect()->route('pelanggan.index')
+            ->with('success', 'Data Pelanggan Berhasil di Tambahkan!');
+
     }
 
     // ==========================================
     // BAGIAN 3: HALAMAN EDIT (UPDATE - VIEW)
     // ==========================================
-    
+
     public function edit($id)
     {
-        // Mencari data pelanggan berdasarkan ID, jika tidak ada tampilkan error 404
         $pelanggan = Pelanggan::findOrFail($id);
-        return view('pelanggan.edit', compact('pelanggan'));
+        $outlets = Outlet::all();
+
+        return view(
+            'pelanggan.edit',
+            compact('pelanggan', 'outlets')
+        );
     }
 
     // ==========================================
     // BAGIAN 4: PROSES UPDATE (UPDATE - LOGIC)
     // ==========================================
-    
+
     public function update(Request $request, $id)
     {
-        // Validasi input untuk update
         $request->validate([
-            'nm_pelanggan'  => 'required',
-            'no_telp'       => 'required',
+            'nm_pelanggan' => 'required',
+            'no_telp' => 'required|unique:pelanggan,no_telp',
             'jenis_kelamin' => 'required',
-            'alamat'        => 'required'
+            'alamat' => 'required'
+
+            ], [
+                'telepon.unique' => 'Nomor telepon sudah digunakan.',
         ]);
 
         $pelanggan = Pelanggan::findOrFail($id);
-        
-        // Proses memperbarui data
+
         $pelanggan->update([
-            'nm_pelanggan'  => $request->nm_pelanggan,
-            'no_telp'       => $request->no_telp,
+            'nm_pelanggan' => $request->nm_pelanggan,
+            'no_telp' => $request->no_telp,
             'jenis_kelamin' => $request->jenis_kelamin,
-            'alamat'        => $request->alamat,
+            'alamat' => $request->alamat,
+            'id_outlet' => auth()->user()->role == 'admin' || auth()->user()->role == 'owner'
+                ? $request->id_outlet
+                : auth()->user()->id_outlet
         ]);
 
-        return redirect()->route('pelanggan.create')->with('success', 'DATA PELANGGAN BERHASIL DIPERBARUI');
+        if (auth()->user()->role == 'kasir') {
+            return redirect()->route('kasir.pelanggan')->with('success', 'Data Pelanggan Berhasil di Perbarui!');
+        }
+
+        return redirect()
+            ->route('pelanggan.index')
+            ->with('success', 'Data Pelanggan Berhasil di Perbarui!');
     }
 
     // ==========================================
     // BAGIAN 5: HAPUS DATA (DELETE)
     // ==========================================
-    
+
     public function destroy($id)
     {
         $pelanggan = Pelanggan::findOrFail($id);
         $pelanggan->delete();
 
+        if (auth()->user()->role == 'kasir') {
+            return redirect()->route('kasir.pelanggan')->with('success', 'Data Berhasil di Hapus');
+        }
+
         // Mengirim flash session 'deleted' untuk memicu SweetAlert peringatan
-        return redirect()->route('pelanggan.create')->with('deleted', 'DATA BERHASIL DIHAPUS');
+        return redirect()->route('pelanggan.create')->with('success', 'Data Berhasil di Hapus');
     }
 }

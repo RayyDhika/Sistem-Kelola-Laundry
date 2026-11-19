@@ -8,313 +8,53 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&display=swap" rel="stylesheet">
-
-    <style>
-        body { background: #e5f0ff; margin: 0; font-family: 'Hammersmith One', sans-serif; color: #0650d1; }
-        
-        .topbar { display: flex; position: sticky; top: 0; z-index: 1060; }
-        .logo-header { width: 240px; height: 70px; background: #1a4fbf !important; color: white; display: flex; align-items: center; gap: 10px; padding: 15px; }
-        .header-right { 
-            flex: 1; 
-            height: 70px; 
-            background: white; 
-            padding: 0 15px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 3px 5px -1px rgba(53, 119, 243); }
-
-        .sidebar { 
-            width: 240px;
-            position: fixed; 
-            top: 70px; 
-            left: 0; 
-            bottom: 0; 
-            background: linear-gradient(#2f80ed, #56ccf2);
-            padding: 15px; 
-            z-index: 990; 
-        }
-
-        .sidebar a { 
-            text-decoration: none; 
-            color: white; 
-            display: block; 
-            padding: 10px 15px; 
-            border-radius: 8px; 
-            margin-bottom: 4px; 
-            font-size: 15px; 
-            position: relative; 
-            transition: 0.3s; 
-        }
-
-        .sidebar a:hover, 
-        .active-menu { 
-            background: rgba(255,255,255,0.2); 
-        }
-
-        .active-menu::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 8px;
-            bottom: 8px;
-            width: 4px;
-            background: white;
-            border-radius: 2px;
-        }
-
-        .menu-title-main { 
-            font-size: 14px; 
-            margin: 15px 5px 5px; 
-            opacity: 0.8; 
-            color: white; 
-            letter-spacing: 1px; 
-        }
-
-        .main { margin-left: 240px; padding: 25px; }
-
-        .card-filter { 
-            border: 2px solid #3577f3; 
-            border-radius: 15px; 
-            background: white; 
-            padding: 25px; 
-        }
-        .form-label-blue { color: #0650d1; font-weight: bold; font-size: 18px; }
-        
-        .btn-tampilkan { 
-            background: #3577f3; 
-            color: white; 
-            border: none; 
-            padding: 10px 30px; 
-            font-weight: bold; 
-            border-radius: 8px; 
-            width: 100%; 
-            height: 43px;
-            transition: 0.2s;
-         }
-
-        .btn-tampilkan:hover { background: #1a4fbf; color: white; }
-
-        .table-custom thead th {
-            background: #b9d5f7;
-            color: #0050d7;
-            padding: 16px;
-            border: none;
-            text-align: center;
-            font-size: 16px;
-            font-family: 'Hammersmith One', sans-serif;
-        }
-
-        .table-custom tbody td {
-            vertical-align: middle;
-            text-align: center;
-            padding: 14px;
-            border-bottom: 1px solid #edf4ff;
-            font-family: Arial, Helvetica, sans-serif !important;
-            font-weight: normal !important;
-            color: #0650d1;
-
-        }
-
-        .card-table { border: none; border-radius: 15px; background: white; box-shadow: 0 4px 15px rgba(53, 119, 243, 0.15); padding: 25px; }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/laporan.css') }}">
 </head>
+
 <body>
 
-<div class="topbar">
-    <div class="logo-header">
-        <img src="{{ asset('images/logoputih.png') }}" width="45">
-        <span style="font-size: 26px;">BubbleBliss</span>
-    </div>
-    <div class="header-right px-4">
-        <div>
-            <h4 class="mb-0" style="font-size: 28px; text-transform: uppercase;">Generate Laporan</h4>
-            <small class="text-primary">Buat Dan Lihat Laporan</small>
+    <div class="topbar">
+        <div class="logo-header">
+            <img src="{{ asset('images/logoputih.png') }}" width="45">
+            <span style="font-size: 26px;">BubbleBliss</span>
         </div>
+        <div class="header-right px-4">
+            <div>
+                <h4 class="mb-0" style="font-size: 28px; text-transform: uppercase;">
 
-        <!-- Profile-->
-        <div class="position-relative">
-            <button id="profileBtn"
-                class="btn border-0 bg-transparent d-flex align-items-center gap-2 text-primary">
+                    @if(auth()->user()->role == 'admin')
+                        Generate Laporan
+                    @else
+                        Generate Laporan {{ auth()->user()->outlet->nm_outlet ?? '-' }}
+                    @endif
 
-                <i class="fa fa-user-circle fs-1"></i>
-                <span>
-                    {{ auth()->user()->name }}
-                </span>
-            </button>
+                </h4>
 
-            <!-- CARD PROFILE -->
-            <div id="profileCard"
-                class="shadow-lg rounded-4 bg-white p-3"
-                style="
-                    width: 320px;
-                    position: absolute;
-                    top: 70px;
-                    right: 0;
-                    display: none;
-                    z-index: 9999;
-                ">
+                <small style="color: #5691f6; font-size: 17px;">
 
-             <!-- HEADER PROFILE -->
-             <div class="d-flex align-items-center gap-3 p-3 rounded-4"
-                  style="background: #eaf2ff;">
+                    @if(auth()->user()->role == 'admin')
+                        Buat Dan Lihat Laporan
+                    @else
+                        Buat Dan Lihat Laporan {{ auth()->user()->outlet->nm_outlet ?? '-' }}
+                    @endif
 
-                  <i class="fa fa-user-circle text-primary"
-                     style="font-size: 70px;"></i>
-
-                  <div>
-                        <h4 class="m-0 fw-bold text-primary text-uppercase">
-                            {{ auth()->user()->name }}
-                        </h4>
-
-                        <small class="text-primary">
-                            {{ auth()->user()->email }}
-                        </small>
-                  </div>
-
-             </div>
-
-             <!-- INFO -->
-            <div class="border rounded-4 p-3 mt-3">
-
-                <p class="mb-2 text-primary" style="font-family: Arial, Helvetica, sans-serif">
-                    <i class="fa fa-user me-2"></i>
-                    Role: {{ ucfirst(auth()->user()->role) }}
-                </p>
-
-                <p class="mb-0 text-success" style="font-family: Arial, Helvetica, sans-serif">
-                    <i class="fa fa-circle me-2"></i>
-                    Status: Aktif
-                </p>
-
+                </small>
+            </div>
+    @include('partials.profile')
             </div>
 
-            <!-- LOGOUT -->
-            <form id="logoutForm"
-                 action="{{ route('logout') }}"
-                 method="POST" 
-                 class="mt-4">
-
-                @csrf
-
-                <button type="button"
-                    id="logoutBtn"
-                    class="btn btn-danger w-100 fw-bold py-2 rounded-3">
-
-                    <i class="fa fa-power-off me-2"></i>
-                    LOGOUT
-
-                </button>
-            </form>
-
         </div>
-
     </div>
 
-</div>
-</div>
+    @include('partials.sidebar')
 
-<div class="sidebar text-white">
+    <div class="main">
+        <p class="text-primary mb-3" style="font-size: 16px;">Silahkan Untuk Melengkapi Terlebih Dahulu Untuk
+            Lanjut</p>
 
-    <div class="menu-title-main">MENU UTAMA</div>
-
-    @if(auth()->user()->role == 'kasir')
-
-        <a href="{{ route('kasir.dashboard') }}">
-            <i class="fa fa-home me-2"></i> Beranda
-        </a>
-
-    @elseif(auth()->user()->role == 'owner')
-
-        <a href="{{ route('owner.dashboard') }}" class="active-menu">
-            <i class="fa fa-file me-2"></i> Laporan
-        </a>
-
-    @else
-
-        <a href="{{ route('dashboard') }}">
-            <i class="fa fa-home me-2"></i> Beranda
-        </a>
-
-    @endif
-
-
-    {{-- KHUSUS ADMIN & KASIR --}}
-    @if(auth()->user()->role != 'owner')
-
-        <div class="menu-title-main">TRANSAKSI</div>
-
-        @if(auth()->user()->role == 'kasir')
-
-            <a href="{{ route('kasir.pelanggan') }}">
-                <i class="fa fa-user-plus me-2"></i> Register Pelanggan
-            </a>
-
-            <a href="{{ route('kasir.transaksi') }}">
-                <i class="fa fa-cart-plus me-2"></i> Entri Transaksi
-            </a>
-
-        @else
-
-            <a href="{{ route('pelanggan.index') }}">
-                <i class="fa fa-user-plus me-2"></i> Register Pelanggan
-            </a>
-
-            <a href="{{ route('transaksi.index') }}">
-                <i class="fa fa-cart-plus me-2"></i> Entri Transaksi
-            </a>
-
-        @endif
-
-    @endif
-
-
-    {{-- KHUSUS ADMIN --}}
-    @if(auth()->user()->role == 'admin')
-
-        <div class="menu-title-main">DATA</div>
-
-        <a href="{{ route('user.index') }}">
-            <i class="fa fa-user me-2"></i> Data Pengguna
-        </a>
-
-        <a href="{{ route('outlet.index') }}">
-            <i class="fa fa-shop me-2"></i> Data Outlet
-        </a>
-
-        <a href="{{ route('paket.index') }}">
-            <i class="fa fa-box me-2"></i> Data Paket
-        </a>
-
-    @endif
-
-
-    @if(auth()->user()->role != 'owner')
-
-<div class="menu-title-main">LAINNYA</div>
-
-    @if(auth()->user()->role == 'kasir')
-
-        <a href="{{ route('kasir.laporan') }}" class="active-menu">
-            <i class="fa fa-file me-2"></i> Laporan
-        </a>
-
-    @else
-
-        <a href="{{ route('laporan.index') }}" class="active-menu">
-            <i class="fa fa-file me-2"></i> Laporan
-        </a>
-
-    @endif
-
-@endif
-
-</div>
-<div class="main">
-    <p class="text-primary fw-bold mb-3" style="font-size: 16px;">Silahkan Untuk Melengkapi Terlebih Dahulu Untuk Lanjut</p>
-    
-    <div class="card-filter mb-4">
-        <form action="
+        <div class="card-filter mb-4">
+            <form action="
         @if(auth()->user()->role == 'kasir')
             {{ route('kasir.laporan') }}
         @elseif(auth()->user()->role == 'owner')
@@ -323,227 +63,240 @@
             {{ route('laporan.index') }}
         @endif   
             " method="GET">
-            <div class="row align-items-end g-3">
-                
-                <div class="col-md-4">
-                    <label class="form-label-blue mb-2">Tanggal Awal</label>
-                    <input type="text" name="tanggal_awal" value="{{ $tanggal_awal ?? '' }}" 
-                           placeholder="Pilih Tanggal Awal..." 
-                           class="form-control shadow-sm py-2 text-primary" 
-                           style="border: 1.5px solid #3577f3; font-family: arial;"
-                           onfocus="(this.type='date')" 
-                           onblur="if(!this.value) this.type='text'" required>
+                <div class="row align-items-end g-3">
+
+                    @if(auth()->user()->role == 'admin')
+
+                        <div class="col-md-3">
+                            <label class="form-label-blue mb-2">Outlet</label>
+
+                            <select name="id_outlet" class="form-control shadow-sm py-2"
+                                style="border: 1.5px solid #3577f3; font-family: arial;">
+                                <option value="">Semua Outlet</option>
+
+                                @foreach($outlets as $outlet)
+                                    <option value="{{ $outlet->id }}" {{ ($id_outlet ?? '') == $outlet->id ? 'selected' : '' }}>
+                                        {{ $outlet->nm_outlet }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label-blue mb-2">Tanggal Awal</label>
+                            <input type="text" name="tanggal_awal" value="{{ $tanggal_awal ?? '' }}"
+                                placeholder="Pilih Tanggal Awal..." class="form-control shadow-sm py-2 text-primary"
+                                style="border: 1.5px solid #3577f3; font-family: arial;" onfocus="(this.type='date')"
+                                onblur="if(!this.value) this.type='text'" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label-blue mb-2">Tanggal Akhir</label>
+                            <input type="text" name="tanggal_akhir" value="{{ $tanggal_akhir ?? '' }}"
+                                placeholder="Pilih Tanggal Akhir..." class="form-control shadow-sm py-2 text-primary"
+                                style="border: 1.5px solid #3577f3; font-family: arial;" onfocus="(this.type='date')"
+                                onblur="if(!this.value) this.type='text'" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <button type="submit" class="btn-tampilkan py-2">
+                                TAMPILKAN
+                            </button>
+                        </div>
+
+                    @else
+
+                        <div class="col-md-4">
+                            <label class="form-label-blue mb-2">Tanggal Awal</label>
+                            <input type="text" name="tanggal_awal" value="{{ $tanggal_awal ?? '' }}"
+                                placeholder="Pilih Tanggal Awal..." class="form-control shadow-sm py-2 text-primary"
+                                style="border: 1.5px solid #3577f3; font-family: arial;" onfocus="(this.type='date')"
+                                onblur="if(!this.value) this.type='text'" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label-blue mb-2">Tanggal Akhir</label>
+                            <input type="text" name="tanggal_akhir" value="{{ $tanggal_akhir ?? '' }}"
+                                placeholder="Pilih Tanggal Akhir..." class="form-control shadow-sm py-2 text-primary"
+                                style="border: 1.5px solid #3577f3; font-family: arial;" onfocus="(this.type='date')"
+                                onblur="if(!this.value) this.type='text'" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <button type="submit" class="btn-tampilkan py-2">
+                                TAMPILKAN
+                            </button>
+                        </div>
+
+                    @endif
+
                 </div>
-
-                <div class="col-md-4">
-                    <label class="form-label-blue mb-2">Tanggal Akhir</label>
-                    <input type="text" name="tanggal_akhir" value="{{ $tanggal_akhir ?? '' }}" 
-                           placeholder="Pilih Tanggal Akhir..." 
-                           class="form-control shadow-sm py-2 text-primary" 
-                           style="border: 1.5px solid #3577f3; font-family: arial;"
-                           onfocus="(this.type='date')" 
-                           onblur="if(!this.value) this.type='text'" required>
-                </div>
-
-                <div class="col-md-4">
-                    <button type="submit" class="btn-tampilkan py-2">TAMPILKAN</button>
-                </div>
-
-            </div>
-        </form>
-    </div>
-
-    <div class="card-table">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold m-0 text-uppercase">Data Laporan Menyeluruh</h5>
-
-        <div class="d-flex align-items-center gap-2"></div>
-
-            @if(isset($tanggal_awal) && isset($tanggal_akhir) && $tanggal_awal && $tanggal_akhir)
-                <span class="badge bg-primary px-3 py-2">
-                    Periode: 
-                    {{ \Carbon\Carbon::parse($tanggal_awal)->format('d/m/Y') }} s/d
-                    {{ \Carbon\Carbon::parse($tanggal_akhir)->format('d/m/Y') }}
-                </span>
-
-            @if(auth()->user()->role == 'kasir')
-
-            <a href="{{ route('kasir.laporan.cetak', [
-                    'tanggal_awal' => $tanggal_awal,
-                    'tanggal_akhir' => $tanggal_akhir
-                ]) }}"
-               class="btn btn-danger">
-
-            @elseif(auth()->user()->role == 'owner')
-
-            <a href="{{ route('owner.laporan.cetak', [
-                    'tanggal_awal' => $tanggal_awal,
-                    'tanggal_akhir' => $tanggal_akhir
-            ]) }}"
-            class="btn btn-danger">
-
-            @else
-
-            <a href="{{ route('laporan.cetak', [
-                    'tanggal_awal' => $tanggal_awal,
-                    'tanggal_akhir' => $tanggal_akhir
-            ]) }}"
-            class="btn btn-danger">
-
-            @endif
-
-                <i class="fa fa-file-pdf"></i>
-                Cetak PDF
-
-            </a>
-
-            @endif
+            </form>
         </div>
-        
-        <div class="table-responsive">
-            <table class="table table-custom">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Kode Invoice</th>
-                        <th>Pelanggan</th>
-                        <th>Paket Cucian</th>
-                        <th>Berat/Qty</th>
-                        <th>Tgl Transaksi</th>
-                        <th>Total Harga</th>
-                    </tr>
-                </thead>
-              <tbody>
 
-@if(isset($tanggal_awal) && isset($tanggal_akhir) && $tanggal_awal && $tanggal_akhir)
+        @php
+            $totalPendapatan = isset($transaksi) ? $transaksi->sum('total_harga') : 0;
+            $jumlahTransaksi = isset($transaksi) ? $transaksi->count() : 0;
+            $rataRata = $jumlahTransaksi > 0
+                ? $totalPendapatan / $jumlahTransaksi
+                : 0;
+        @endphp
 
-    @forelse($transaksi as $key => $t)
+        <div class="row mb-4">
 
-    <tr>
-        <td>{{ $key + 1 }}</td>
+            <div class="col-md-4">
+                <div class="card-stat" style="background:#6da8ff;">
+                    <h6>TOTAL PENDAPATAN</h6>
+                    <h2>
+                        Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
+                    </h2>
+                </div>
+            </div>
 
-        <td>
-            <b class="text-dark">
-                {{ $t->kode_invoice ?? 'INV-'.$t->id }}
-            </b>
-        </td>
+            <div class="col-md-4">
+                <div class="card-stat" style="background:#3577f3;">
+                    <h6>JUMLAH TRANSAKSI</h6>
+                    <h2>
+                        {{ $jumlahTransaksi }}
+                    </h2>
+                </div>
+            </div>
 
-        <td>
-            {{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}
-        </td>
+            <div class="col-md-4">
+                <div class="card-stat" style="background:#1a4fbf;">
+                    <h6>RATA-RATA TRANSAKSI</h6>
+                    <h2>
+                        Rp {{ number_format($rataRata, 0, ',', '.') }}
+                    </h2>
+                </div>
+            </div>
 
-        <td>
-            @foreach ($t->details as $detail)
-                {{ $detail->paket->nm_paket ?? '-'  }}<br>
-            @endforeach
-        </td>
+        </div>
 
-        <td>
-            {{ $t->details->sum('qty')}} KG
-        </td>
+        <div class="card-table">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold m-0 text-uppercase">Data Laporan Menyeluruh</h5>
 
-        <td>
-            {{ \Carbon\Carbon::parse($t->tgl_masuk)->format('d/m/Y') }}
-        </td>
+                <div class="d-flex align-items-center gap-2"></div>
 
-        <td class="text-primary font-weight-bold">
-            Rp {{ number_format($t->total_harga, 0, ',', '.') }}
-        </td>
-    </tr>
+                @if(isset($tanggal_awal) && isset($tanggal_akhir) && $tanggal_awal && $tanggal_akhir)
+                    <span class="badge bg-primary px-3 py-2">
+                        Periode:
+                        {{ \Carbon\Carbon::parse($tanggal_awal)->format('d/m/Y') }} s/d
+                        {{ \Carbon\Carbon::parse($tanggal_akhir)->format('d/m/Y') }}
+                    </span>
 
-    @empty
+                    @if(auth()->user()->role == 'kasir')
 
-    <tr>
-        <td colspan="7" class="text-muted py-4">
-            Tidak ada data transaksi ditemukan pada periode ini.
-        </td>
-    </tr>
+                                <a href="{{ route('kasir.laporan.cetak', [
+                            'tanggal_awal' => $tanggal_awal,
+                            'tanggal_akhir' => $tanggal_akhir
+                        ]) }}" class="btn btn-danger">
 
-    @endforelse
+                    @elseif(auth()->user()->role == 'owner')
 
-@else
+                                        <a href="{{ route('owner.laporan.cetak', [
+                                'tanggal_awal' => $tanggal_awal,
+                                'tanggal_akhir' => $tanggal_akhir
+                            ]) }}" class="btn btn-danger">
 
-    <tr>
-        <td colspan="7" class="text-muted py-4">
-            Silahkan pilih tanggal terlebih dahulu.
-        </td>
-    </tr>
+                        @else
 
-@endif
+                                                <a href="{{ route('laporan.cetak', [
+                                    'tanggal_awal' => $tanggal_awal,
+                                    'tanggal_akhir' => $tanggal_akhir,
+                                    'id_outlet' => $id_outlet
+                                ]) }}" class="btn btn-danger">
 
-</tbody>
+                            @endif
 
-</table>
-</div>
-</div>
-</div>
+                                <i class="fa fa-file-pdf"></i>
+                                Cetak PDF
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                            </a>
 
-<!-- script profil -->
-<script>
+                @endif
+            </div>
 
-    const profileBtn = document.getElementById('profileBtn');
-    const profileCard = document.getElementById('profileCard');
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode Invoice</th>
+                            <th>Pelanggan</th>
+                            <th>Paket Cucian</th>
+                            <th>Berat/Qty</th>
+                            <th>Tgl Transaksi</th>
+                            <th>Total Harga</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-    profileBtn.addEventListener('click', function () {
+                        @if(isset($tanggal_awal) && isset($tanggal_akhir) && $tanggal_awal && $tanggal_akhir)
 
-        if (profileCard.style.display === 'block') {
-            profileCard.style.display = 'none';
-        } else {
-            profileCard.style.display = 'block';
-        }
+                            @forelse($transaksi as $key => $t)
 
-    });
+                                <tr>
+                                    <td>{{ $key + 1 }}</td>
 
-    document.addEventListener('click', function(e) {
+                                    <td>
+                                        <b class="text-dark">
+                                            {{ $t->kode_invoice ?? 'INV-' . $t->id }}
+                                        </b>
+                                    </td>
 
-        if (
-            !profileBtn.contains(e.target) &&
-            !profileCard.contains(e.target)
-        ) {
-            profileCard.style.display = 'none';
-        }
+                                    <td>
+                                        {{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}
+                                    </td>
 
-    });
+                                    <td>
+                                        @foreach($t->details as $detail)
+                                            {{ $detail->paket->nm_paket ?? '-' }}@if(!$loop->last),@endif<br>
+                                        @endforeach
+                                    </td>
 
-</script>
+                                    <td>
+                                        {{ $t->details->sum('qty')}} KG
+                                    </td>
 
-<!-- script notif  logout-->
- <script>
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($t->tgl_masuk)->format('d/m/Y') }}
+                                    </td>
 
-    const logoutBtn = document.getElementById('logoutBtn');
-    const logoutForm = document.getElementById('logoutForm');
+                                    <td class="text-primary font-weight-bold">
+                                        Rp {{ number_format($t->total_harga, 0, ',', '.') }}
+                                    </td>
+                                </tr>
 
-    logoutBtn.addEventListener('click', function () {
+                            @empty
 
-        Swal.fire({
-            title: 'Yakin ingin logout?',
-            text: 'Anda akan keluar dari halaman {{ auth()->user()->role }}',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#0d6efd',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, Logout',
-            cancelButtonText: 'Batal',
-            background: '#ffffff',
-            color: '#0650d1'
-        }).then((result) => {
+                                <tr>
+                                    <td colspan="7" class="text-muted py-4">
+                                        Tidak ada data transaksi ditemukan pada periode ini.
+                                    </td>
+                                </tr>
 
-            if (result.isConfirmed) {
+                            @endforelse
 
-                logoutForm.submit();
+                        @else
 
-            }
+                            <tr>
+                                <td colspan="7" class="text-muted py-4">
+                                    Silahkan pilih tanggal terlebih dahulu.
+                                </td>
+                            </tr>
 
-        });
+                        @endif
 
-    });
+                    </tbody>
 
-</script>
-
+                </table>
+            </div>
+        </div>
+    </div>
+@include('laporan.script')
 
 </body>
+
 </html>

@@ -1,0 +1,86 @@
+body {
+            background: #e5f0ff;
+            margin: 0;
+            font-family: 'Hammersmith One', sans-serif;
+        }
+
+        /* HEADER */
+        .topbar {
+            display: flex;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-header {
+            width: 240px;
+            height: 70px;
+            background: #1a4fbf !important;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+        }
+
+        .header-right {
+            flex: 1;
+            height: 70px;
+            background: white;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 3px 5px -1px rgb(53, 119, 243);
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            margin-left: 240px;
+            padding: 20px;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 5px -1px rgb(53, 119, 243);
+            margin-bottom: 25px;
+        }
+
+        /* CARD MENU */
+        .card-menu {
+            border: none;
+            border-top: 4px solid #278cff;
+            transition: 0.3s;
+            text-decoration: none;
+            color: inherit;
+            height: 100%;
+        }
+
+        .card-menu:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-menu i {
+            font-size: 40px;
+            color: #0d6efd;
+        }
+
+        .card-menu h5 {
+            color: #0650d1;
+            margin-top: 15px;
+            font-weight: normal;
+        }
+
+        .card-menu small {
+            color: #5691f6;
+        }
+
+        .card-stat {
+            border-radius: 15px;
+            color: white;
+            padding: 10px 20px;
+            box-shadow: 0 4px 15px rgba(53, 119, 243, .15);
+        }

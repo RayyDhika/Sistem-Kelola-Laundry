@@ -61,5 +61,5 @@ class Transaksi extends Model
     public function paket()
     {
         return $this->belongsTo(Paket::class, 'id_paket');
-    }  
+    }
 }

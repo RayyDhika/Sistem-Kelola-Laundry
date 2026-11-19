@@ -1,36 +1,62 @@
-@extends('layouts.app')
+<div class="modal fade" id="modalEdit" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content p-4">
+            <h5 class="text-primary fw-bold mb-4">EDIT PELANGGAN</h5>
+            <form id="formEdit" method="POST">
+                @csrf @method('PUT')
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="section-box">
+                            <label class="form-label-blue">Nama Pelanggan</label>
+                            <input type="text" id="edit_nama" name="nm_pelanggan" class="form-control" required>
+                        </div>
+                        <div class="section-box">
+                            <label class="form-label-blue">No Telepon</label>
+                            <input type="text" id="edit_telp" name="no_telp" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="section-box">
+                            <label class="form-label-blue mb-2">Jenis Kelamin</label>
+                            <div class="radio-box">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="edit_jk_l" name="jenis_kelamin"
+                                        value="L">
+                                    <label class="form-check-label">Laki-Laki</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="edit_jk_p" name="jenis_kelamin"
+                                        value="P">
+                                    <label class="form-check-label">Perempuan</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-box">
+                            <label class="form-label-blue">Alamat</label>
+                            <textarea id="edit_alamat" name="alamat" class="form-control" rows="4" required></textarea>
+                        </div>
+                        @if(auth()->user()->role == 'admin' || auth()->user()->role == 'owner')
+                            <div class="section-box">
+                                <label class="form-label-blue">Outlet</label>
 
-@section('content')
-<div class="container mt-4">
-    <div class="card mx-auto" style="max-width: 600px;">
-        <div class="card-header text-white" style="background-color: #002699;">
-            <h5 class="mb-0">EDIT DATA PELANGGAN</h5>
-        </div>
-        <div class="card-body">
-            <form action="{{ route('pelanggan.update', $pelanggan->id) }}" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="form-group mb-3">
-                    <label>Nama Pelanggan :</label>
-                    <input type="text" name="nama_pelanggan" value="{{ $pelanggan->nama_pelanggan }}" class="form-control" required>
+                                <select id="edit_outlet" name="id_outlet" class="form-control" required>
+                                    <option value="">Pilih Outlet</option>
+
+                                    @foreach($outlets as $outlet)
+                                        <option value="{{ $outlet->id }}">
+                                            {{ $outlet->nm_outlet }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+
+                    </div>
                 </div>
-                <div class="form-group mb-3">
-                    <label>No Tlp :</label>
-                    <input type="text" name="nomor_telepon" value="{{ $pelanggan->nomor_telepon }}" class="form-control" required>
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <button type="button" class="btn-batal" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-simpan">Simpan</button>
                 </div>
-                <div class="form-group mb-3">
-                    <label>Jenis Kelamin :</label><br>
-                    <input type="radio" name="jenis_kelamin" value="Laki - Laki" {{ $pelanggan->jenis_kelamin == 'Laki - Laki' ? 'checked' : '' }}> Laki - Laki
-                    <input type="radio" name="jenis_kelamin" value="Perempuan" {{ $pelanggan->jenis_kelamin == 'Perempuan' ? 'checked' : '' }} class="ml-2"> Perempuan
-                </div>
-                <div class="form-group mb-3">
-                    <label>Alamat :</label>
-                    <textarea name="alamat" class="form-control" rows="3" required>{{ $pelanggan->alamat }}</textarea>
-                </div>
-                <button type="submit" class="btn btn-success w-100">PERBARUI DATA</button>
-                <a href="{{ route('pelanggan.index') }}" class="btn btn-secondary w-100 mt-2">BATAL</a>
             </form>
         </div>
     </div>
-</div>
-@endsection

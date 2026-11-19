@@ -3,25 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaksi;
+use App\Models\Outlet;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class LaporanController extends Controller
 {
+    // ==========================
+    // ADMIN
+    // ==========================
     public function index(Request $request)
     {
-        $tanggal_awal = $request->input('tanggal_awal');
-        $tanggal_akhir = $request->input('tanggal_akhir');
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $id_outlet = $request->id_outlet;
 
-        // ambil outlet user login
-        $idOutlet = auth()->user()->id_outlet;
+        $outlets = Outlet::all();
 
-        // query dasar
-        $query = Transaksi::with(['pelanggan', 'details.paket']);
+        $query = Transaksi::with([
+            'pelanggan',
+            'details.paket'
+        ]);
 
-        // kalau bukan outlet pusat
-        if (auth()->user()->role != 'admin') {
-            $query->where('id_outlet', $idOutlet);
+        // ADMIN boleh filter outlet
+        if ($id_outlet) {
+
+            $query->where(
+                'id_outlet',
+                $id_outlet
+            );
         }
 
         $transaksi = collect();
@@ -29,55 +39,116 @@ class LaporanController extends Controller
         if ($tanggal_awal && $tanggal_akhir) {
 
             $transaksi = $query
-                ->whereBetween('tgl_masuk', [$tanggal_awal, $tanggal_akhir])
+                ->whereBetween(
+                    'tgl_masuk',
+                    [$tanggal_awal, $tanggal_akhir]
+                )
                 ->get();
         }
 
         return view('laporan.index', compact(
             'transaksi',
             'tanggal_awal',
-            'tanggal_akhir'
+            'tanggal_akhir',
+            'id_outlet',
+            'outlets'
         ));
     }
 
-
-    public function cetak()
+    // ==========================
+    // CETAK PDF ADMIN
+    // ==========================
+    public function cetak(Request $request)
     {
-        $idOutlet = auth()->user()->id_outlet;
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+        $id_outlet = $request->id_outlet;
 
-        $query = Transaksi::with('pelanggan');
+        $query = Transaksi::with([
+            'pelanggan',
+            'outlet',
+            'details.paket'
+        ]);
 
-        if (auth()->user()->role != 'admin') {
-            $query->where('id_outlet', $idOutlet);
+        if ($id_outlet) {
+
+            $query->where(
+                'id_outlet',
+                $id_outlet
+            );
+        }
+
+        if ($tanggal_awal && $tanggal_akhir) {
+
+            $query->whereBetween(
+                'tgl_masuk',
+                [$tanggal_awal, $tanggal_akhir]
+            );
         }
 
         $laporans = $query->latest()->get();
 
-        $pdf = Pdf::loadView('laporan.pdf', compact('laporans'));
+        $pdf = Pdf::loadView(
+            'laporan.pdf',
+            compact(
+                'laporans',
+                'tanggal_awal',
+                'tanggal_akhir'
+            )
+        );
 
         return $pdf->download('laporan-laundry.pdf');
     }
 
-
+    // ==========================
+    // KASIR
+    // ==========================
     public function kasirIndex(Request $request)
     {
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
 
-        $idOutlet = auth()->user()->id_outlet;
-
-        $query = Transaksi::with(['pelanggan', 'details.paket']);
-
-        if (auth()->user()->role != 'admin') {
-            $query->where('id_outlet', $idOutlet);
-        }
-
-        $transaksi = [];
+        $transaksi = collect(); // default kosong
 
         if ($tanggal_awal && $tanggal_akhir) {
 
-            $transaksi = $query
+            $transaksi = Transaksi::with([
+                'outlet',
+                'pelanggan',
+                'details.paket'
+            ])
+                ->where('id_outlet', auth()->user()->id_outlet)
                 ->whereBetween('tgl_masuk', [$tanggal_awal, $tanggal_akhir])
+                ->latest()
+                ->get();
+        }
+
+        return view('laporan.index', compact(
+            'transaksi',
+            'tanggal_awal',
+            'tanggal_akhir'
+        ));
+    }
+    // ==========================
+    // OWNER
+    // ==========================
+    public function ownerIndex(Request $request)
+    {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+
+        $transaksi = collect(); // default kosong
+
+        if ($tanggal_awal && $tanggal_akhir) {
+
+            $transaksi = Transaksi::with([
+                'outlet',
+                'pelanggan',
+                'details.paket'
+            ])
+                ->where('id_outlet', auth()->user()->id_outlet)
+                ->whereBetween('tgl_masuk', [$tanggal_awal, $tanggal_akhir])
+                ->latest()
                 ->get();
         }
 
@@ -88,33 +159,72 @@ class LaporanController extends Controller
         ));
     }
 
-
-    public function ownerIndex(Request $request)
+    // ==========================
+    // CETAK PDF OWNER
+    // ==========================
+    public function ownerCetak(Request $request)
     {
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
 
-        $idOutlet = auth()->user()->id_outlet;
-
-        $query = Transaksi::with(['pelanggan', 'details.paket']);
-
-        if (auth()->user()->role != 'admin') {
-            $query->where('id_outlet', $idOutlet);
-        }
-
-        $transaksi = [];
+        $query = Transaksi::with([
+            'pelanggan',
+            'outlet',
+            'details.paket'
+        ])
+            ->where(
+                'id_outlet',
+                auth()->user()->id_outlet
+            );
 
         if ($tanggal_awal && $tanggal_akhir) {
 
-            $transaksi = $query
-                ->whereBetween('tgl_masuk', [$tanggal_awal, $tanggal_akhir])
-                ->get();
+            $query->whereBetween(
+                'tgl_masuk',
+                [$tanggal_awal, $tanggal_akhir]
+            );
         }
 
-        return view('laporan.index', compact(
-            'transaksi',
-            'tanggal_awal',
-            'tanggal_akhir'
-        ));
+        $laporans = $query->latest()->get();
+
+        $pdf = Pdf::loadView(
+            'laporan.pdf',
+            compact(
+                'laporans',
+                'tanggal_awal',
+                'tanggal_akhir'
+            )
+        );
+
+        return $pdf->download('laporan-owner.pdf');
+    }
+
+    // ==========================
+    // CETAK PDF KASIR
+    // ==========================
+    public function kasirCetak(Request $request)
+    {
+        $tanggal_awal = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+
+        $query = Transaksi::with([
+            'pelanggan',
+            'outlet',
+            'details.paket'
+        ])
+            ->where('id_outlet', auth()->user()->id_outlet);
+
+        if ($tanggal_awal && $tanggal_akhir) {
+            $query->whereBetween('tgl_masuk', [$tanggal_awal, $tanggal_akhir]);
+        }
+
+        $laporans = $query->latest()->get();
+
+        $pdf = Pdf::loadView(
+            'laporan.pdf',
+            compact('laporans', 'tanggal_awal', 'tanggal_akhir')
+        );
+
+        return $pdf->download('laporan-kasir.pdf');
     }
 }

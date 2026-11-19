@@ -1,0 +1,288 @@
+body {
+    background: #e5f0ff;
+    margin: 0;
+    font-family: "Hammersmith One", sans-serif;
+    color: #0650d1;
+}
+
+.topbar {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+}
+
+.logo-header {
+    width: 240px;
+    height: 70px;
+    background: #1a4fbf;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+}
+
+.header-right {
+    flex: 1;
+    height: 70px;
+    background: white;
+    padding: 0 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 3px 5px -1px rgb(53, 119, 243);
+}
+
+.main {
+    margin-left: 240px;
+    padding: 25px 25px 25px 25px;
+}
+
+.card-custom {
+    border: 2px solid #c7d7ff;
+    border-radius: 14px;
+    background: white;
+    box-shadow: 0 3px 10px rgba(53, 119, 243, 0.15);
+    overflow: hidden;
+}
+
+.table-custom {
+    width: 100%;
+    table-layout: auto;
+}
+
+.table-custom td,
+.table-custom th {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.table-custom thead th {
+    background: #b9d5f7;
+    color: #0050d7;
+    padding: 14px;
+    vertical-align: middle;
+    border: none;
+    text-align: center;
+    font-weight: bold;
+    font-family: "Hammersmith One", sans-serif;
+}
+
+.table-custom tbody td {
+    vertical-align: middle;
+    padding: 15px;
+    color: #0650d1;
+    text-align: center;
+    font-weight: normal !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    color: #0650d1;
+}
+
+.table-responsive {
+    padding: 0 18px;
+}
+
+.btn-add {
+    background: #4f7df3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+}
+
+.btn-action {
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.card-stat {
+    border-radius: 10px;
+    color: white;
+    padding: 10px 20px;
+    box-shadow: 0 4px 15px rgba(53, 119, 243, 0.15);
+}
+
+.btn-add {
+    background: linear-gradient(to right, #4f7dff, #2357eb);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    font-family: "Hammersmith One", sans-serif;
+}
+
+.btn-add:hover {
+    opacity: 0.9;
+    color: white;
+}
+
+.table-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid #dbe7ff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-title {
+    font-size: 18px;
+    color: #0050d7;
+    font-weight: bold;
+    margin: 0;
+    font-family: "Hammersmith One", sans-serif;
+}
+
+/* MODAL */
+
+#modalTambah .modal-dialog {
+    max-width: 660px;
+    margin: 5px auto;
+}
+
+#modalTambah .modal-content {
+    border: none;
+    border-radius: 26px;
+    padding: 18px 22px;
+    background: white;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.modal-title-custom {
+    color: #3467eb;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.section-box {
+    border: 1.5px solid #bfd7ff;
+    border-radius: 14px;
+    padding: 8px;
+    background: #f8fbff;
+    margin-bottom: 12px;
+}
+
+.section-title {
+    color: #3467eb;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.form-label-blue {
+    color: #7da6ff;
+    font-size: 12px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.form-control,
+.form-select {
+    border: 1.5px solid #7da6ff;
+    border-radius: 10px;
+    height: 32px;
+    color: #000000;
+    font-size: 12px;
+    box-shadow: none !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+
+textarea.form-control {
+    height: 55px;
+    resize: none;
+}
+
+.qty-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-add-item {
+    width: 70px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: #4f7df3;
+    color: white;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-box {
+    border: 1.5px solid #8fb6ff;
+    border-radius: 14px;
+    min-height: 140px;
+    background: #f8fbff;
+    padding: 10px;
+}
+
+.cart-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 120px;
+}
+
+.cart-empty i {
+    font-size: 45px;
+    color: #b3c6ff;
+    margin-bottom: 10px;
+}
+
+.cart-empty p {
+    color: #9ab5ff;
+    font-size: 14px;
+    margin: 0;
+}
+
+.detail-box {
+    border: 1.5px solid #bfd7ff;
+    border-radius: 14px;
+    padding: 12px;
+    margin-top: 12px;
+    background: #f8fbff;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #3467eb;
+    font-size: 14px;
+}
+
+.btn-simpan {
+    background: #0b46d1;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 32px;
+}
+
+.btn-batal {
+    background: #39a0ff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 32px;
+}
+
+.modal-footer-custom {
+    display: flex;
+    justify-content: end;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.detail-value {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #0650d1;
+}

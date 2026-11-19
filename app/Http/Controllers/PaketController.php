@@ -9,61 +9,62 @@ use Illuminate\Http\Request;
 
 class PaketController extends Controller
 {
-  public function index()
-{
-    $idOutlet = auth()->user()->id_outlet;
+    public function index()
+    {
+        $idOutlet = auth()->user()->id_outlet;
 
-    // ADMIN PUSAT
-    if (auth()->user()->role == 'admin') {
+        // ADMIN PUSAT
+        if (auth()->user()->role == 'admin') {
 
-        $pakets = Paket::with('outlet')->get();
+            $pakets = Paket::with('outlet')->get();
 
-        $outlets = Outlet::all();
+            $outlets = Outlet::all();
 
-        $users = User::all();
+            $users = User::all();
 
-    } 
-    // ADMIN CABANG
-    else {
+        }
+        // ADMIN CABANG
+        else {
 
-        $pakets = Paket::with('outlet')
-            ->where('id_outlet', $idOutlet)
-            ->get();
+            $pakets = Paket::with('outlet')
+                ->where('id_outlet', $idOutlet)
+                ->get();
 
-        $outlets = Outlet::where('id', $idOutlet)->get();
+            $outlets = Outlet::where('id', $idOutlet)->get();
 
-        $users = User::where('id_outlet', $idOutlet)->get();
+            $users = User::where('id_outlet', $idOutlet)->get();
+        }
+
+        return view('paket.index', compact('pakets', 'outlets', 'users'));
     }
-
-    return view('paket.index', compact('pakets', 'outlets', 'users'));
-}
     public function store(Request $request)
-{
-    $request->validate([
-        'id_outlet' => 'required',
-        'jenis' => 'required',
-        'nm_paket' => 'required',
-        'harga' => 'required',
-    ]);
+    {
+        $request->validate([
+            'id_outlet' => 'required',
+            'jenis' => 'required',
+            'nm_paket' => 'required',
+            'harga' => 'required',
+        ]);
 
-    Paket::create([
+        Paket::create([
 
-        'id_outlet' => $request->id_outlet,
+            'id_outlet' => $request->id_outlet,
 
-        'jenis' => $request->jenis,
+            'jenis' => $request->jenis,
 
-        'nm_paket' => $request->nm_paket,
+            'nm_paket' => $request->nm_paket,
 
-        'harga' => $request->harga,
+            'harga' => $request->harga,
 
-    ]);
+        ]);
 
-    return redirect()->back()->with('success', 'Paket berhasil ditambahkan!');
-}
+        return redirect()->back()->with('success', 'Paket berhasil ditambahkan!');
+    }
     public function update(Request $request, $id)
     {
         $paket = Paket::findOrFail($id);
         $paket->update([
+            'id_outlet' => $request->id_outlet,
             'jenis' => $request->jenis,
             'nm_paket' => $request->nm_paket,
             'harga' => $request->harga,

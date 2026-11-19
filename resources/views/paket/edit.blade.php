@@ -11,15 +11,12 @@
                     EDIT DATA PAKET
                 </h5>
 
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal">
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
                 </button>
 
             </div>
 
-            <form action="{{ route('paket.update', $p->id) }}"
-                  method="POST">
+            <form action="{{ route('paket.update', $p->id) }}" method="POST">
 
                 @csrf
                 @method('PUT')
@@ -33,18 +30,15 @@
                             Pilih Outlet
                         </label>
 
-                        <select name="id_outlet"
-                                class="form-select"
-                                required>
+                        <select name="id_outlet" class="form-select" required>
 
                             @foreach($outlets as $outlet)
 
-                            <option value="{{ $outlet->id }}"
-                                {{ $p->id_outlet == $outlet->id ? 'selected' : '' }}>
+                                <option value="{{ $outlet->id }}" {{ $p->id_outlet == $outlet->id ? 'selected' : '' }}>
 
-                                {{ $outlet->nm_outlet }}
+                                    {{ $outlet->nm_outlet }}
 
-                            </option>
+                                </option>
 
                             @endforeach
 
@@ -59,17 +53,13 @@
                             Jenis Paket
                         </label>
 
-                        <select name="jenis"
-                                class="form-select"
-                                required>
+                        <select name="jenis" class="form-select" required>
 
-                            <option value="kiloan"
-                                {{ $p->jenis == 'kiloan' ? 'selected' : '' }}>
+                            <option value="kiloan" {{ $p->jenis == 'kiloan' ? 'selected' : '' }}>
                                 Kiloan
                             </option>
 
-                            <option value="satuan"
-                                {{ $p->jenis == 'satuan' ? 'selected' : '' }}>
+                            <option value="satuan" {{ $p->jenis == 'satuan' ? 'selected' : '' }}>
                                 Satuan
                             </option>
 
@@ -84,11 +74,7 @@
                             Nama Paket
                         </label>
 
-                        <input type="text"
-                               name="nm_paket"
-                               class="form-control"
-                               value="{{ $p->nm_paket }}"
-                               required>
+                        <input type="text" name="nm_paket" class="form-control" value="{{ $p->nm_paket }}" required>
 
                     </div>
 
@@ -99,11 +85,7 @@
                             Harga
                         </label>
 
-                        <input type="number"
-                               name="harga"
-                               class="form-control"
-                               value="{{ $p->harga }}"
-                               required>
+                        <input type="number" name="harga" class="form-control" value="{{ $p->harga }}" required>
 
                     </div>
 
@@ -111,16 +93,13 @@
 
                 <div class="modal-footer border-0">
 
-                    <button type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
 
                         BATAL
 
                     </button>
 
-                    <button type="submit"
-                            class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary">
 
                         SIMPAN
 
